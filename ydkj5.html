@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YDKJ FULLSTREAM — База данных</title>
+    <style>
+        :root {
+            --bg: #0d0d12;
+            --row-bg: #1c1c24;
+            --tips-bg: #252530;
+            --text: #ffffff;
+            --accent: #2AA63E;          /* Розовый — Основа */
+            --accent-gib: #FFB347;      /* Оранжевый — Тарабарщина */
+            --accent-dis: #A29BFE;      /* Фиолетовый — Это или То */
+            --accent-final: #7BF1A8;    /* Зеленый — Финал */
+            --ans-color: #00ffcc;
+            --input-bg: #1a1a1a;
+            --input-border: #333;
+            --table-border: #2a2a35;
+        }
+
+        * { box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 20px; }
+
+        .header { max-width: 800px; margin: 0 auto 20px; display: flex; align-items: center; justify-content: space-between; }
+        .back-btn { text-decoration: none; color: var(--accent); font-weight: bold; font-size: 0.9rem; border: 1px solid var(--accent); padding: 5px 15px; border-radius: 5px; transition: 0.3s; }
+        .back-btn:hover { background: var(--accent); color: #000; }
+
+        .search-wrapper, .tips, table { max-width: 800px; width: 100%; margin-left: auto; margin-right: auto; }
+        .search-box { margin-bottom: 20px; }
+        .search-box input {
+            width: 100%; padding: 15px; border-radius: 8px; border: 2px solid var(--input-border);
+            background: var(--input-bg); color: white; font-size: 1.1rem; outline: none; transition: 0.3s;
+        }
+
+        #searchInput:focus { border-color: var(--accent); }
+        #searchGib:focus { border-color: var(--accent-gib); }
+        #searchDis:focus { border-color: var(--accent-dis); }
+        #searchFinal:focus { border-color: var(--accent-final); }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th { text-align: left; color: var(--accent); padding: 10px; border-bottom: 2px solid var(--input-border); text-transform: uppercase; font-size: 0.8rem; }
+        td { padding: 15px 10px; border-bottom: 1px solid var(--table-border); background: var(--row-bg); vertical-align: top; }
+
+        .ans { color: var(--ans-color); font-weight: bold; }
+        .cat-tag { font-size: 0.7rem; color: #666; text-transform: uppercase; display: block; margin-bottom: 4px; }
+
+        /* --- НОВЫЕ СТИЛИ ФИНАЛА И ТАРАБАРЩИНЫ --- */
+        .ans-tag {
+            display: inline-block;
+            background: rgba(0, 255, 204, 0.1);
+            border: 1px solid rgba(0, 255, 204, 0.3);
+            color: var(--ans-color);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            margin: 2px;
+        }
+
+        .final-prompt-container {
+            margin-bottom: 15px;
+            padding: 12px;
+            background: rgba(123, 241, 168, 0.03);
+            border-radius: 8px;
+            border: 1px solid #333;
+            border-left: 4px solid var(--accent-final);
+        }
+
+        .prompt-label {
+            color: var(--accent-final);
+            font-size: 0.65rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+
+        .clues-list { margin: 5px 0; padding-left: 18px; font-size: 0.8rem; color: #888; }
+
+        /* Дис или Дат стили */
+        .dis-header { color: var(--accent-dis); font-size: 0.8rem; margin-bottom: 10px; border-bottom: 1px solid #444; padding-bottom: 5px; }
+        .dis-item { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #333; font-size: 0.95rem; }
+        .dis-item:last-child { border-bottom: none; }
+        .choice-tag { font-weight: bold; font-size: 0.8rem; padding: 2px 6px; border-radius: 4px; background: #000; }
+
+        .tips { margin: 40px auto; background: var(--tips-bg); padding: 20px; border-radius: 12px; border-left: 4px solid var(--accent); }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <a href="index.html" class="back-btn">← МЕНЮ</a>
+    <h2 style="color: var(--accent); margin: 0;">YDKJ FULLSTREAM</h2>
+</div>
+
+<div class="search-wrapper">
+    <div class="search-box">
+        <label style="color: var(--accent); font-size: 0.8rem; margin-left: 5px;"><strong>ОБЫЧНЫЕ ВОПРОСЫ</strong></label>
+        <input type="text" id="searchInput" placeholder="🔍 Введите вопрос ...">
+    </div>
+    <div class="search-box">
+        <label style="color: var(--accent-gib); font-size: 0.8rem; margin-left: 5px;"><strong>ТАРАБАРСКИЙ ВОПРОС</strong></label>
+        <input type="text" id="searchGib" placeholder="🔍 Введите вопрос ...">
+    </div>
+    <div class="search-box">
+        <label style="color: var(--accent-dis); font-size: 0.8rem; margin-left: 5px;"><strong>ТО ДО СЁ</strong></label>
+        <input type="text" id="searchDis" placeholder="🔍 Введите вопрос ...">
+    </div>
+    <div class="search-box">
+        <label style="color: var(--accent-final); font-size: 0.8rem; margin-left: 5px;"><strong>ФИНАЛ</strong></label>
+        <input type="text" id="searchFinal" placeholder="💀 Поиск по теме финала...">
+    </div>
+</div>
+
+<table id="qaTable" style="display: none;">
+    <thead><tr><th style="width: 70%;">Вопрос</th><th>Ответ</th></tr></thead>
+    <tbody id="tableBody"></tbody>
+</table>
+
+<table id="gibTable" style="display: none;">
+    <thead><tr><th style="width: 60%;">Созвучие</th><th>Разгадка</th></tr></thead>
+    <tbody id="gibBody"></tbody>
+</table>
+
+<table id="disTable" style="display: none;">
+    <thead><tr><th style="width: 50%;">Категория / Предметы</th><th>Выбор</th></tr></thead>
+    <tbody id="disBody"></tbody>
+</table>
+
+<table id="finalTable" style="display: none;">
+    <thead><tr><th style="width: 30%;">Тема эпизода</th><th>Jack Attack Подсказки</th></tr></thead>
+    <tbody id="finalBody"></tbody>
+</table>
+
+<div class="tips">
+    <h3>💡 Подсказки для зрителя:</h3>
+    <ul>
+        <li><strong>GIBBERISH:</strong> Слышишь в этом бред? Это не игра, это твой внутренний голос.</li>
+        <li><strong>DIS OR DAT:</strong> Если паника зашкаливает — жми «ОБА». Шанс угадать 33%, что всё равно в три раза выше твоего IQ.</li>
+        <li><strong>ФИНАЛ:</strong> Выбирай быстрее, чем деградируешь. Времени в обрез.</li>
+    </ul>
+</div>
+
+<script src="content/data_jack_base.js"></script>
+<script src="content/data_jack_final.js"></script>
+<script src="content/data_jack_gibberish.js"></script>
+<script src="content/data_jack_dis.js"></script>
+
+<script>
+    window.onload = function() {
+        const parse = (t) => t ? t.replace(/\[i\]/g, '<i>').replace(/\[\/i\]/g, '</i>') : '-';
+
+        // 1. ОБЫЧНЫЕ
+        if (window.DB_DATA) {
+            document.getElementById('tableBody').innerHTML = (window.DB_DATA.content || window.DB_DATA).map(q => {
+                const fullQ = q.questionText.map(part => part.text).join(' ');
+                const correct = q.choices.find(c => c.isCorrect).text;
+                return `<tr><td><span class="cat-tag">${q.category?.text || ''}</span><strong>${parse(fullQ)}</strong></td><td class="ans">${parse(correct)}</td></tr>`;
+            }).join('');
+        }
+
+        // 2. ТАРАБАРЩИНА (С ПОДСКАЗКАМИ)
+        if (window.DB_JACK_GIBBERISH) {
+            document.getElementById('gibBody').innerHTML = (window.DB_JACK_GIBBERISH.content || window.DB_JACK_GIBBERISH).map(q => {
+                const cluesHtml = q.clues ? q.clues.map(c => `<li>${parse(c.text)}</li>`).join('') : '';
+                return `<tr>
+                    <td><span class="cat-tag">${q.category.text}</span><div style="color:var(--accent-gib); font-style:italic;">"${q.gibberishText.text}"</div></td>
+                    <td><div class="ans">${q.correctText.text}</div><ul class="clues-list">${cluesHtml}</ul></td>
+                </tr>`;
+            }).join('');
+        }
+
+        // 3. ЭТО ИЛИ ТО
+        if (window.DB_JACK_DIS) {
+            document.getElementById('disBody').innerHTML = (window.DB_JACK_DIS.content || window.DB_JACK_DIS).map(set => {
+                const itemsHtml = set.questions.map(q => {
+                    let label = (q.correctChoiceString === "dis") ? set.disChoice.shortText : (q.correctChoiceString === "dat" ? set.datChoice.shortText : "ОБА");
+                    return `<div class="dis-item"><span>${q.text}</span><span class="choice-tag" style="color:var(--ans-color)">${label}</span></div>`;
+                }).join('');
+                return `<tr>
+                    <td><span class="cat-tag">ЭТО ИЛИ ТО</span><strong>${set.category.text}</strong><div class="dis-header">${set.disChoice.shortText} vs ${set.datChoice.shortText}</div></td>
+                    <td>${itemsHtml}</td>
+                </tr>`;
+            }).join('');
+        }
+
+        // 4. ФИНАЛ (КРАСИВАЯ КАРТОЧНАЯ СИСТЕМА)
+        if (window.DB_DATA_FINAL) {
+            document.getElementById('finalBody').innerHTML = (window.DB_DATA_FINAL.content || window.DB_DATA_FINAL).map(episode => {
+                const promptCards = episode.prompts.map(p => {
+                    const answerTags = p.choices.filter(c => c.isCorrect).map(c => `<span class="ans-tag">${parse(c.text)}</span>`).join('');
+                    return `<div class="final-prompt-container"><div class="prompt-label">ПОДСКАЗКА</div><div class="prompt-title"><strong>${parse(p.title)}</strong></div><div>${answerTags}</div></div>`;
+                }).join('');
+                return `<tr><td style="vertical-align: middle;"><span class="cat-tag" style="color: var(--accent-final)">ЭПИЗОД</span><div style="font-size: 1.2rem; font-weight: bold; color: var(--accent); line-height: 1.2;">${parse(episode.title)}</div></td><td>${promptCards}</td></tr>`;
+            }).join('');
+        }
+
+        const handleSearch = (input, table, tbody) => {
+            const filter = input.value.trim().toLowerCase();
+            const rows = tbody.getElementsByTagName('tr');
+            if (filter === "") { table.style.display = "none"; return; }
+            let has = false;
+            for (let row of rows) {
+                if (row.textContent.toLowerCase().includes(filter)) { row.style.display = ""; has = true; }
+                else { row.style.display = "none"; }
+            }
+            table.style.display = has ? "table" : "none";
+        };
+
+        const sBase = document.getElementById('searchInput');
+        const sGib = document.getElementById('searchGib');
+        const sDis = document.getElementById('searchDis');
+        const sFinal = document.getElementById('searchFinal');
+
+        sBase.oninput = () => handleSearch(sBase, document.getElementById('qaTable'), document.getElementById('tableBody'));
+        sGib.oninput = () => handleSearch(sGib, document.getElementById('gibTable'), document.getElementById('gibBody'));
+        sDis.oninput = () => handleSearch(sDis, document.getElementById('disTable'), document.getElementById('disBody'));
+        sFinal.oninput = () => handleSearch(sFinal, document.getElementById('finalTable'), document.getElementById('finalBody'));
+    };
+</script>
+</body>
+</html>

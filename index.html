@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jackbox Hub | What If Edition</title>
+    <style>
+        :root {
+            --bg: #0d0d12;
+            --card-bg: #1c1c24;
+            --accent: #ffcc00;
+            --text: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 40px;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 5px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 20px;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            text-decoration: none;
+            color: white;
+            transition: 0.3s;
+            border: 1px solid rgba(255,255,255,0.05);
+            overflow: hidden; /* Чтобы картинка не вылезала за края */
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+        }
+
+        /* Окошко для картинки */
+        .image-placeholder {
+            width: 100%;
+            height: 140px;
+            background: #2a2a35;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .image-placeholder img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Картинка заполнит всё пространство */
+        }
+
+        /* Инфо-блок под картинкой */
+        .card-info {
+            padding: 15px;
+            text-align: center;
+        }
+
+        .tag {
+            font-size: 0.7rem;
+            color: var(--accent);
+            text-transform: uppercase;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+            opacity: 0.8;
+        }
+
+        .card h2 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        @media (max-width: 600px) {
+            .grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .image-placeholder { height: 100px; }
+            h1 { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>JACKBOX CHEETSHEET</h1>
+
+    <div class="grid">
+        <a href="tmp1.html" class="card">
+            <div class="image-placeholder">
+                <img src="images/tmp.jpg">
+            </div>
+            <div class="card-info">
+                <span class="tag">Pack 3</span>
+                <h2>Смертельная вечеринка</h2>
+            </div>
+        </a>
+
+        <a href="tmp2.html" class="card">
+            <div class="image-placeholder"><img src="images/tmp2.jpg"></div>
+            <div class="card-info">
+                <span class="tag">Pack 6</span>
+                <h2>Смертельная вечеринка 2</h2>
+            </div>
+        </a>
+
+        <a href="guess.html" class="card">
+            <div class="image-placeholder"><img src="images/nashshpionaj.jpg"></div>
+            <div class="card-info">
+                <span class="tag">Pack 3</span>
+                <h2>Нашшпионаж</h2>
+            </div>
+        </a>
+
+        <a href="wheel.html" class="card">
+            <div class="image-placeholder"><img src="images/wheel.jpg"></div>
+            <div class="card-info">
+                <span class="tag">Pack 8</span>
+                <h2>Колесо невероятных масштабов</h2>
+            </div>
+        </a>
+
+        <a href="fibbage3.html" class="card">
+            <div class="image-placeholder"><img src="images/fibbage3.jpg"></div>
+            <div class="card-info">
+                <span class="tag">Pack 4</span>
+                <h2>Бредовуха 3</h2>
+            </div>
+        </a>
+
+        <a href="fibbage4.html" class="card">
+            <div class="image-placeholder"><img src="images/fibbage4.jpg"></div>
+            <div class="card-info">
+                <span class="tag">Pack 9</span>
+                <h2>Бредовуха 4</h2>
+            </div>
+        </a>
+
+        <a href="quixort.html" class="card">
+            <div class="image-placeholder"><img src="images/skorosort.png"></div>
+            <div class="card-info">
+                <span class="tag">Pack 9</span>
+                <h2>Сортировка</h2>
+            </div>
+        </a>
+
+        <a href="ydkj5.html" class="card">
+            <div class="image-placeholder"><img src="images/YDNJFS.png"></div>
+            <div class="card-info">
+                <span class="tag">Pack 5</span>
+                <h2>А голову ты не забыл? Full Stream</h2>
+            </div>
+        </a>
+
+    </div>
+
+</body>
+</html>

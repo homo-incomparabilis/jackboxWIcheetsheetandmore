@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>БРЕДОВУХА 3 — База данных</title>
+    <style>
+        :root {
+            --bg: #0d0d12;
+            --row-bg: #1c1c24;
+            --tips-bg: #252530;
+            --text: #ffffff;
+            --accent: #FDA5D5;
+            --accent-final: #7BF1A8;
+            --ans-color: #00ffcc;
+            --lie-color: #ff3366;
+            --input-bg: #1a1a1a;
+            --input-border: #333;
+        }
+
+        * { box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 20px; }
+
+        .header { max-width: 800px; margin: 0 auto 20px; display: flex; align-items: center; justify-content: space-between; }
+        .back-btn { text-decoration: none; color: var(--accent); font-weight: bold; font-size: 0.9rem; border: 1px solid var(--accent); padding: 5px 15px; border-radius: 5px; transition: 0.3s; }
+        .back-btn:hover { background: var(--accent); color: #000; }
+
+        .search-wrapper, .tips, table { max-width: 800px; width: 100%; margin: 0 auto; }
+        .search-box { margin-bottom: 20px; }
+        .search-box input {
+            width: 100%; padding: 15px; border-radius: 8px; border: 2px solid var(--input-border);
+            background: var(--input-bg); color: white; font-size: 1.1rem; outline: none; transition: 0.3s;
+        }
+
+        #searchInput:focus { border-color: var(--accent); }
+        #searchFinal:focus { border-color: var(--accent-final); }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; display: none; }
+        th { text-align: left; color: var(--accent); padding: 10px; border-bottom: 2px solid var(--input-border); text-transform: uppercase; font-size: 0.8rem; }
+        td { padding: 15px 10px; border-bottom: 1px solid #2a2a35; background: var(--row-bg); vertical-align: top; }
+
+        .ans { color: var(--ans-color); font-weight: bold; font-size: 1.1rem; }
+        .lie-text { color: var(--lie-color); font-size: 0.8rem; margin-top: 8px; line-height: 1.4; display: block; border-top: 1px solid #333; padding-top: 5px; }
+        .cat-tag { font-size: 0.7rem; color: #666; text-transform: uppercase; display: block; margin-bottom: 4px; }
+        .blank { color: var(--accent); text-decoration: underline; font-weight: bold; }
+
+        .tips { margin: 40px auto; background: var(--tips-bg); padding: 20px; border-radius: 12px; border-left: 4px solid var(--accent); }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <a href="index.html" class="back-btn">← МЕНЮ</a>
+    <h2 style="color: var(--accent); margin: 0;">БРЕДОВУХА 3</h2>
+</div>
+
+<div class="search-wrapper">
+    <div class="search-box">
+        <label style="color: var(--accent); font-size: 0.8rem; margin-left: 5px;"><strong>ОБЫЧНЫЕ ВОПРОСЫ</strong></label>
+        <input type="text" id="searchInput" placeholder="🔍 Введите вопрос или ответ...">
+    </div>
+    <div class="search-box">
+        <label style="color: var(--accent-final); font-size: 0.8rem; margin-left: 5px;"><strong>ФИНАЛЬНЫЙ РАУНД</strong></label>
+        <input type="text" id="searchFinal" placeholder="💀 Текст из финала Бредовухи 3...">
+    </div>
+</div>
+
+<table id="qaTable">
+    <thead><tr><th style="width: 65%; color:var(--ans-color)">ВОПРОС</th><th><span style="color:var(--ans-color)">ПРАВДА</span> / <span style="color:var(--lie-color)">ЛОЖЬ</span></th></tr></thead>
+    <tbody id="tableBody"></tbody>
+</table>
+
+<table id="finalTable">
+    <thead><tr><th style="width: 65%; color:var(--ans-color)">ФИНАЛЬНЫЙ ВОПРОС</th><th>ОТВЕТ</th></tr></thead>
+    <tbody id="finalBody"></tbody>
+</table>
+
+<div class="tips">
+    <h3>⚠️ Внимание, детектив:</h3>
+    <ul>
+        <li>Если в таблице стоят прочерки "—", значит ты загрузил файлы-пустышки без текста. Тебе нужны файлы из папки <strong>localized</strong>.</li>
+        <li><strong>Поиск:</strong> Работает по категориям, вопросам и ответам одновременно.</li>
+        <li><strong>Ложь:</strong> Если поле пустое, значит в твоем файле не прописаны варианты блефа.</li>
+    </ul>
+</div>
+
+<script src="content/data_fibbage3_base.js"></script>
+<script src="content/data_fibbage3_final.js"></script>
+
+<script>
+    const parseJack = (text) => {
+    if (!text) return '—';
+    return text.toString()
+        .replace(/\[i\]/g, '<i>').replace(/\[\/i\]/g, '</i>') // Итальянизируем курсив
+        .replace(/{{BLANK}}|<Blank>|\[Blank\]/gi, '<span class="blank"><span style="color:var(--text)">_______</span></span>'); // Рисуем дыры в вопросах
+};
+
+    // Функция, которая достает данные даже из самого кривого JSON
+    const getJackData = (item) => {
+        let q = item.questionText || "";
+        let a = item.correctText || "";
+        let s = item.suggestions || [];
+        let c = item.category || "";
+
+        // Если данные лежат в массиве "fields" (специфика RU-модов)
+        if (item.fields) {
+            item.fields.forEach(f => {
+                if (f.n === "QuestionText") q = f.v;
+                if (f.n === "CorrectText") a = f.v;
+                if (f.n === "Suggestions") s = f.v ? f.v.split(',') : [];
+                if (f.n === "Category") c = f.v;
+            });
+        }
+        return { q, a, s, c };
+    };
+
+    window.onload = function() {
+        const render = (data, bodyId) => {
+            const body = document.getElementById(bodyId);
+            if (!data) return;
+            const items = data.content || (Array.isArray(data) ? data : []);
+
+            body.innerHTML = items.map(raw => {
+                const item = getJackData(raw);
+                const lies = (item.s && item.s.length > 0)
+                    ? `<span class="lie-text"><span style="color:#666; font-weight:bold; font-size:0.6rem;">ЛОЖЬ:</span> ${item.s.join(', ')}</span>`
+                    : "";
+                return `<tr>
+                    <td><span class="cat-tag">${item.c}</span><strong>${parseJack(item.q)}</strong></td>
+                    <td><div class="ans">${parseJack(item.a)}</div>${lies}</td>
+                </tr>`;
+            }).join('');
+        };
+
+        render(window.DB_FIBBAGE3_BASE, 'tableBody');
+        render(window.DB_FIBBAGE3_FINAL, 'finalBody');
+
+        const handleSearch = (input, tableId, bodyId) => {
+            const filter = input.value.trim().toLowerCase();
+            const table = document.getElementById(tableId);
+            const rows = document.getElementById(bodyId).getElementsByTagName('tr');
+
+            if (filter === "") { table.style.display = "none"; return; }
+
+            let found = false;
+            for (let row of rows) {
+                if (row.textContent.toLowerCase().includes(filter)) {
+                    row.style.display = ""; found = true;
+                } else { row.style.display = "none"; }
+            }
+            table.style.display = found ? "table" : "none";
+        };
+
+        document.getElementById('searchInput').oninput = function() { handleSearch(this, 'qaTable', 'tableBody'); };
+        document.getElementById('searchFinal').oninput = function() { handleSearch(this, 'finalTable', 'finalBody'); };
+    };
+</script>
+</body>
+</html>

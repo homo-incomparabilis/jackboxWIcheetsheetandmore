@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>СКОРОСОРТ — База данных</title>
+    <style>
+        :root {
+            --bg: #0d0d12;
+            --row-bg: #1c1c24;
+            --tips-bg: #1a2221;
+            --text: #ffffff;
+            --accent-short: #00ffd5;   /* Бирюзовый */
+            --accent-long: #7BF1A8;    /* Салатовый */
+            --accent-trash: #ff3333;   /* Красный */
+            --ans-color: #39ff14;
+            --input-bg: #1a1a1a;
+            --input-border: #333;
+            --table-border: #2a2a35;
+        }
+
+        * { box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 20px; }
+
+        .header { max-width: 800px; margin: 0 auto 20px; display: flex; align-items: center; justify-content: space-between; }
+        .back-btn { text-decoration: none; color: var(--accent-short); font-weight: bold; font-size: 0.9rem; border: 1px solid var(--accent-short); padding: 5px 15px; border-radius: 5px; transition: 0.3s; }
+        .back-btn:hover { background: var(--accent-short); color: #000; }
+
+        .search-wrapper, .tips, table { max-width: 800px; width: 100%; margin-left: auto; margin-right: auto; }
+        .search-box { margin-bottom: 20px; }
+
+        input {
+            width: 100%; padding: 15px; border-radius: 8px; border: 2px solid var(--input-border);
+            background: var(--input-bg); color: white; font-size: 1.1rem; outline: none; transition: 0.3s;
+        }
+
+        #searchShort:focus { border-color: var(--accent-short); }
+        #searchLong:focus { border-color: var(--accent-long); }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; display: none; }
+        th { text-align: left; color: var(--accent-short); padding: 10px; border-bottom: 2px solid var(--input-border); text-transform: uppercase; font-size: 0.8rem; }
+        td { padding: 15px 10px; border-bottom: 1px solid var(--table-border); background: var(--row-bg); vertical-align: top; }
+
+        /* Элементы списка */
+        .seq-item {
+            display: flex; justify-content: space-between;
+            padding: 4px 0; border-bottom: 1px solid #333;
+        }
+        .seq-item:last-child { border: none; }
+        .seq-num { color: #888; font-weight: bold; margin-right: 10px; min-width: 25px; display: inline-block; }
+        .seq-val { color: var(--ans-color); font-size: 0.85rem; font-weight: bold; }
+
+        /* Метки направления */
+        .labels-box {
+            background: #000; padding: 6px; border-radius: 4px;
+            margin-bottom: 10px; display: flex; justify-content: space-between;
+            font-size: 0.75rem; text-transform: uppercase; border: 1px solid #444; color: #aaa;
+        }
+
+        /* Мусорные блоки */
+        .trash-box {
+            margin-top: 12px; padding: 10px; border: 1px solid var(--accent-trash);
+            border-radius: 4px; background: rgba(255, 51, 51, 0.05);
+        }
+        .trash-title { color: var(--accent-trash); font-size: 0.7rem; font-weight: bold; text-transform: uppercase; margin-bottom: 5px; }
+        .trash-item { display: inline-block; background: var(--accent-trash); color: #fff; padding: 2px 8px; border-radius: 3px; margin: 2px; font-size: 0.85rem; }
+
+        .tips { margin: 40px auto; background: var(--tips-bg); padding: 20px; border-radius: 12px; border-left: 4px solid var(--accent-short); }
+        i { font-style: italic; color: inherit; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <a href="index.html" class="back-btn">← МЕНЮ</a>
+    <h2 style="color: var(--accent-short); margin: 0;">СКОРОСОРТ</h2>
+</div>
+
+<div class="search-wrapper">
+    <div class="search-box">
+        <label style="color: var(--accent-short); font-size: 0.8rem; margin-left: 5px;"><strong>ОБЫЧНАЯ ИГРА</strong></label>
+        <input type="text" id="searchShort" placeholder="🔍 Введите вопрос ...">
+    </div>
+
+    <div class="search-box">
+        <label style="color: var(--accent-long); font-size: 0.8rem; margin-left: 5px;"><strong>СКОРОСОРТ НАВСЕГДА</strong></label>
+        <input type="text" id="searchLong" placeholder="🔍 Введите вопрос ...">
+    </div>
+</div>
+
+<table id="shortTable">
+    <thead><tr><th style="width: 35%;">Тема / Направление</th><th>Правильный порядок</th></tr></thead>
+    <tbody id="shortBody"></tbody>
+</table>
+
+<table id="longTable">
+    <thead><tr><th style="width: 35%;">Тема / Направление</th><th>Последовательность</th></tr></thead>
+    <tbody id="longBody"></tbody>
+</table>
+
+<div class="tips">
+    <h3>💡 Советы по сортировке:</h3>
+    <ul>
+        <li>Если блок <span style="color: var(--accent-trash); font-weight: bold;">КРАСНЫЙ</span> — это не «редкий артефакт», это мусор! В УТИЛЬ!!!</li>
+        <li>Твои пальцы должны быть быстрее, чем ты в постели.</li>
+        <li>Блок падает. Ты тупишь. Роботы смеются.</li>
+    </ul>
+</div>
+
+<script src="content/data_quixort_short.js"></script>
+<script src="content/data_quixort_long.js"></script>
+
+<script>
+    window.onload = function() {
+        const parseJackText = (text) => text ? text.replace(/\[i\]/g, '<i>').replace(/\[\/i\]/g, '</i>') : '-';
+
+        // Универсальный рендер
+        const renderData = (dataVar, bodyId) => {
+            const body = document.getElementById(bodyId);
+            // Проверяем наличие данных в разных форматах
+            if (!dataVar) return;
+            const itemsArray = dataVar.content ? dataVar.content : (Array.isArray(dataVar) ? dataVar : []);
+
+            body.innerHTML = itemsArray.map(q => {
+                // Рендер основных элементов
+                const itemsHtml = q.items.map((item, index) => `
+                    <div class="seq-item">
+                        <span><span class="seq-num">${index + 1}</span>${parseJackText(item.shortText || item.text)}</span>
+                        <span class="seq-val">${item.displayValue || ''}</span>
+                    </div>
+                `).join('');
+
+                // Рендер мусора
+                let trashHtml = '';
+                if (q.trash && q.trash.length > 0) {
+                    trashHtml = `
+                        <div class="trash-box">
+                            <div class="trash-title">ЛОЖНЫЕ БЛОКИ:</div>
+                            ${q.trash.map(t => `<span class="trash-item">${parseJackText(t.shortText || t.text)}</span>`).join('')}
+                        </div>`;
+                }
+
+                return `<tr>
+                    <td>
+                        <div class="labels-box">
+                            <span>${q.leftLabel || 'Начало'}</span>
+                            <span>➔</span>
+                            <span>${q.rightLabel || 'Конец'}</span>
+                        </div>
+                        <strong>${parseJackText(q.prompt)}</strong>
+                    </td>
+                    <td>
+                        ${itemsHtml}
+                        ${trashHtml}
+                    </td>
+                </tr>`;
+            }).join('');
+        };
+
+        // Пытаемся отрендерить оба файла
+        try { renderData(typeof DB_QUIXORT_SHORT !== 'undefined' ? DB_QUIXORT_SHORT : null, 'shortBody'); } catch(e) { console.log(e); }
+        try { renderData(typeof DB_QUIXORT_LONG !== 'undefined' ? DB_QUIXORT_LONG : null, 'longBody'); } catch(e) { console.log(e); }
+
+        // Логика поиска
+        const setupSearch = (inputId, tableId, bodyId) => {
+            const input = document.getElementById(inputId);
+            const table = document.getElementById(tableId);
+            const rows = document.getElementById(bodyId).getElementsByTagName('tr');
+
+            input.addEventListener('input', () => {
+                const filter = input.value.trim().toLowerCase();
+                if (filter === "") { table.style.display = "none"; return; }
+
+                let found = false;
+                for (let row of rows) {
+                    const match = row.textContent.toLowerCase().includes(filter);
+                    row.style.display = match ? "" : "none";
+                    if (match) found = true;
+                }
+                table.style.display = found ? "table" : "none";
+            });
+        };
+
+        setupSearch('searchShort', 'shortTable', 'shortBody');
+        setupSearch('searchLong', 'longTable', 'longBody');
+    };
+</script>
+</body>
+</html>

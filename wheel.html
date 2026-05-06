@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>КОЛЕСО НЕВЕРОЯТНЫХ МАСШТАБОВ — База данных</title>
+    <style>
+        /* === ПАЛИТРА ЦВЕТОВ КОЛЕСА === */
+        :root {
+            --bg: #0d0d12;
+            --row-bg: #1c1c24;
+            --tips-bg: #211a2b;
+            --text: #ffffff;
+            --accent-list: #7BF1A8;      /* 01. Зеленый — Списки */
+            --accent-numeric: #ffcc00;   /* 02. Золотой — Числа */
+            --accent-matching: #FF33AA;  /* 03. Розовый — Сопоставления */
+            --accent-census: #00aaff;    /* 04. Голубой — Перепись */
+            --accent-clues: #ff8800;     /* 05. Оранжевый — Загадки */
+            --accent-more-less: #DAB2FF; /* 06. Сиреневый — Сравнение */
+            --ans-color: #39ff14;
+            --input-bg: #1a1a1a;
+            --input-border: #333;
+            --table-border: #2a2a35;
+        }
+
+        * { box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 20px; }
+
+        .header { max-width: 800px; margin: 0 auto 20px; display: flex; align-items: center; justify-content: space-between; }
+        .back-btn { text-decoration: none; color: var(--accent-list); font-weight: bold; font-size: 0.9rem; border: 1px solid var(--accent-list); padding: 5px 15px; border-radius: 5px; transition: 0.3s; }
+        .back-btn:hover { background: var(--accent-list); color: #000; }
+
+        .search-wrapper, .tips, table { max-width: 800px; width: 100%; margin-left: auto; margin-right: auto; }
+        .search-box { margin-bottom: 20px; }
+
+        input {
+            width: 100%; padding: 15px; border-radius: 8px; border: 2px solid var(--input-border);
+            background: var(--input-bg); color: white; font-size: 1.1rem; outline: none; transition: 0.3s;
+        }
+
+        /* Фокусы для всех 6 поисков */
+        #searchList:focus { border-color: var(--accent-list); }
+        #searchNumeric:focus { border-color: var(--accent-numeric); }
+        #searchMatching:focus { border-color: var(--accent-matching); }
+        #searchCensus:focus { border-color: var(--accent-census); }
+        #searchClues:focus { border-color: var(--accent-clues); }
+        #searchMoreLess:focus { border-color: var(--accent-more-less); }
+
+        table { border-collapse: collapse; margin-top: 20px; display: none; width: 100%; }
+        th { text-align: left; color: var(--accent-list); padding: 10px; border-bottom: 2px solid var(--input-border); text-transform: uppercase; font-size: 0.8rem; }
+        td { padding: 15px 10px; border-bottom: 1px solid var(--table-border); background: var(--row-bg); }
+
+        .ans { color: var(--ans-color); font-weight: bold; font-size: 1.1rem; }
+        .unit-text { color: #888; font-size: 0.85rem; display: block; margin-top: 5px; }
+
+        /* Теги (Списки и Перепись) */
+        .ans-tag {
+            display: inline-block; background: rgba(57, 255, 20, 0.1);
+            color: var(--ans-color); padding: 4px 10px; margin: 3px;
+            border-radius: 4px; font-weight: bold; border: 1px solid rgba(57, 255, 20, 0.3);
+            font-size: 0.9rem;
+        }
+        .alt-text { color: #888; font-size: 0.75rem; font-weight: normal; margin-left: 4px; }
+
+        /* Пары (Сопоставление и Сравнение) */
+        .match-pair { display: flex; justify-content: space-between; border-bottom: 1px solid #333; padding: 5px 0; }
+        .match-pair:last-child { border: none; }
+        .match-val { color: var(--ans-color); font-weight: bold; }
+
+        .clue-item { font-size: 0.9rem; color: #bbb; margin-bottom: 5px; padding-left: 15px; position: relative; }
+        .clue-item::before { content: "•"; position: absolute; left: 0; color: var(--accent-clues); }
+
+        .category-label { font-size: 0.7rem; color: #888; text-transform: uppercase; display: block; margin-bottom: 5px; }
+        .tips { margin: 40px auto; background: var(--tips-bg); padding: 20px; border-radius: 12px; border-left: 4px solid var(--accent-list); }
+        i { font-style: italic; color: inherit; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <a href="index.html" class="back-btn">← МЕНЮ</a>
+    <h2 style="color: var(--accent-list); margin: 0;">КОЛЕСО</h2>
+</div>
+
+<div class="search-wrapper">
+    <div class="search-box">
+        <label style="color: var(--accent-list); font-size: 0.8rem; margin-left: 5px;"><strong>ОБЫЧНЫЕ ВОПРОСЫ</strong></label>
+        <input type="text" id="searchList" placeholder="🔍 Введите вопрос ...">
+    </div>
+
+    <div class="search-box">
+        <label style="color: var(--accent-numeric); font-size: 0.8rem; margin-left: 5px;"><strong>НЕ ПРОСЧИТАЙТЕСЬ</strong></label>
+        <input type="text" id="searchNumeric" placeholder="🔍 Введите вопрос ...">
+    </div>
+
+    <div class="search-box">
+        <label style="color: var(--accent-matching); font-size: 0.8rem; margin-left: 5px;"><strong>СОПОСТАВЛЕНИЯ</strong></label>
+        <input type="text" id="searchMatching" placeholder="🔍 Введите тему ...">
+    </div>
+
+    <div class="search-box">
+        <label style="color: var(--accent-census); font-size: 0.8rem; margin-left: 5px;"><strong>ПЕРЕПИСЬ ОТВЕТОВ</strong></label>
+        <input type="text" id="searchCensus" placeholder="🔍 Введите тему ...">
+    </div>
+
+    <div class="search-box">
+        <label style="color: var(--accent-clues); font-size: 0.8rem; margin-left: 5px;"><strong>О ЧЁМ ДУМАЕТ КОЛЕСО?</strong></label>
+        <input type="text" id="searchClues" placeholder="🔍 Введите подсказку ...">
+    </div>
+
+    <div class="search-box">
+        <label style="color: var(--accent-more-less); font-size: 0.8rem; margin-left: 5px;"><strong>ЛИБО ТО, ЛИБО ЭТО</strong></label>
+        <input type="text" id="searchMoreLess" placeholder="🔍 Введите тему ...">
+    </div>
+</div>
+
+<table id="listTable"><thead><tr><th>Вопрос</th><th>Верные варианты</th></tr></thead><tbody id="listBody"></tbody></table>
+<table id="numericTable"><thead><tr><th>Вопрос</th><th>Ответ</th></tr></thead><tbody id="numericBody"></tbody></table>
+<table id="matchingTable"><thead><tr><th>Вопрос</th><th>Правильные пары</th></tr></thead><tbody id="matchingBody"></tbody></table>
+<table id="censusTable"><thead><tr><th>Тема</th><th>Все ответы</th></tr></thead><tbody id="censusBody"></tbody></table>
+<table id="cluesTable"><thead><tr><th>Загадка</th><th>Подсказки</th><th>Ответ</th></tr></thead><tbody id="cluesBody"></tbody></table>
+<table id="moreLessTable"><thead><tr><th>Вопрос</th><th>Рейтинг</th></tr></thead><tbody id="moreLessBody"></tbody></table>
+
+<div class="tips">
+    <h3>💡 Советы Мудрого Колеса:</h3>
+    <ul>
+        <li><strong>Общее:</strong> Не спорь с Колесом. Оно больше тебя. Буквально.</li>
+        <li><strong>Карма:</strong> Стрелка решит твою судьбу. Я лишь подсказываю путь.</li>
+        <li><strong>Правило Хомяка:</strong> Интеллект важен, но побеждает тот, кто быстрее тапает.</li>
+    </ul>
+</div>
+
+<script src="content/data_wheel_lists.js"></script>
+<script src="content/data_wheel_numeric.js"></script>
+<script src="content/data_wheel_matching.js"></script>
+<script src="content/data_wheel_census.js"></script>
+<script src="content/data_wheel_clues.js"></script>
+<script src="content/data_wheel_moreless.js"></script>
+
+<script>
+    window.onload = function() {
+        const parseJackText = (text) => text ? text.replace(/\[i\]/g, '<i>').replace(/\[\/i\]/g, '</i>') : '-';
+
+        // 1. Списки
+        if (typeof DB_WHEEL_LISTS !== 'undefined') {
+            const data = Array.isArray(DB_WHEEL_LISTS) ? DB_WHEEL_LISTS : DB_WHEEL_LISTS.content;
+            document.getElementById('listBody').innerHTML = data.map(item => {
+                const ansHtml = item.answers.map(a => `<span class="ans-tag">${parseJackText(a.text)}</span>`).join('');
+                return `<tr><td><span class="category-label">${item.category}</span><strong>${parseJackText(item.prompt)}</strong></td><td>${ansHtml}</td></tr>`;
+            }).join('');
+        }
+
+        // 2. Числа
+        if (typeof DB_WHEEL_NUMERIC !== 'undefined') {
+            const dataNum = Array.isArray(DB_WHEEL_NUMERIC) ? DB_WHEEL_NUMERIC : DB_WHEEL_NUMERIC.content;
+            document.getElementById('numericBody').innerHTML = dataNum.map(item => {
+                const unitHtml = item.unit ? `<span class="unit-text">Юнит: ${parseJackText(item.unit)}</span>` : '';
+                return `<tr><td><span class="category-label">${item.category}</span><strong>${parseJackText(item.prompt)}</strong>${unitHtml}</td><td class="ans">${item.value}</td></tr>`;
+            }).join('');
+        }
+
+        // 3. Сопоставления (Matching)
+        if (typeof DB_WHEEL_MATCHING !== 'undefined') {
+            const dataMatch = Array.isArray(DB_WHEEL_MATCHING) ? DB_WHEEL_MATCHING : DB_WHEEL_MATCHING.content;
+            document.getElementById('matchingBody').innerHTML = dataMatch.map(item => {
+                const pairsHtml = item.answers.map(a => `
+                    <div class="match-pair">
+                        <span>${parseJackText(a.text)}</span>
+                        <span class="match-val">→ ${parseJackText(a.match)}</span>
+                    </div>`).join('');
+                return `<tr>
+                    <td style="width: 35%; vertical-align: top;"><span class="category-label">${item.category}</span><strong>${parseJackText(item.prompt)}</strong></td>
+                    <td>${pairsHtml}</td>
+                </tr>`;
+            }).join('');
+        }
+
+        // 4. Перепись
+        if (typeof DB_WHEEL_CENSUS !== 'undefined') {
+            const dataCensus = Array.isArray(DB_WHEEL_CENSUS) ? DB_WHEEL_CENSUS : DB_WHEEL_CENSUS.content;
+            document.getElementById('censusBody').innerHTML = dataCensus.map(item => {
+                const ansHtml = item.answers.map(a => {
+                    const alts = (a.altSpellings && a.altSpellings.length > 0) ? `<span class="alt-text">(${a.altSpellings.join(', ')})</span>` : '';
+                    return `<span class="ans-tag">${parseJackText(a.text)}${alts}</span>`;
+                }).join('');
+                return `<tr><td><span class="category-label">${item.category}</span><strong>${parseJackText(item.prompt)}</strong></td><td>${ansHtml}</td></tr>`;
+            }).join('');
+        }
+
+        // 5. Загадки
+        if (typeof DB_WHEEL_CLUES !== 'undefined') {
+            const dataClues = Array.isArray(DB_WHEEL_CLUES) ? DB_WHEEL_CLUES : DB_WHEEL_CLUES.content;
+            document.getElementById('cluesBody').innerHTML = dataClues.map(item => {
+                const cluesHtml = item.clues.map(c => `<div class="clue-item">${parseJackText(c.clue)}</div>`).join('');
+                return `<tr><td><span class="category-label">${item.category}</span><strong>${parseJackText(item.prompt)}</strong></td><td>${cluesHtml}</td><td class="ans">${parseJackText(item.answer)}</td></tr>`;
+            }).join('');
+        }
+
+        // 6. Сравнение
+        if (typeof DB_WHEEL_MORELESS !== 'undefined') {
+            const dataML = Array.isArray(DB_WHEEL_MORELESS) ? DB_WHEEL_MORELESS : DB_WHEEL_MORELESS.content;
+            document.getElementById('moreLessBody').innerHTML = dataML.map(item => {
+                const sorted = [...item.answers].sort((a, b) => parseFloat(a.value) - parseFloat(b.value));
+                const listHtml = sorted.map(a => `<div class="match-pair"><span>${parseJackText(a.text)}</span><span class="match-val">${a.value}</span></div>`).join('');
+                return `<tr><td><span class="category-label">${item.category}</span><strong>${parseJackText(item.prompt)}</strong></td><td>${listHtml}</td></tr>`;
+            }).join('');
+        }
+
+        const setupSearch = (inputId, tableId, bodyId) => {
+            const input = document.getElementById(inputId);
+            const table = document.getElementById(tableId);
+            const rows = document.getElementById(bodyId).getElementsByTagName('tr');
+            input.addEventListener('input', () => {
+                const filter = input.value.trim().toLowerCase();
+                if (filter === "") { table.style.display = "none"; return; }
+                let found = false;
+                for (let row of rows) {
+                    const match = row.textContent.toLowerCase().includes(filter);
+                    row.style.display = match ? "" : "none";
+                    if (match) found = true;
+                }
+                table.style.display = found ? "table" : "none";
+            });
+        };
+
+        setupSearch('searchList', 'listTable', 'listBody');
+        setupSearch('searchNumeric', 'numericTable', 'numericBody');
+        setupSearch('searchMatching', 'matchingTable', 'matchingBody');
+        setupSearch('searchCensus', 'censusTable', 'censusBody');
+        setupSearch('searchClues', 'cluesTable', 'cluesBody');
+        setupSearch('searchMoreLess', 'moreLessTable', 'moreLessBody');
+    };
+</script>
+</body>
+</html>

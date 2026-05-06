@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRIVIA MURDER PARTY — База данных</title>
+    <style>
+        /* === ПАЛИТРА ЦВЕТОВ (Настроено под стиль TMP) === */
+        :root {
+            --bg: #0d0d12;              /* Фон страницы */
+            --row-bg: #1c1c24;          /* Фон строк таблицы */
+            --tips-bg: #252530;         /* Фон блока советов */
+            --text: #ffffff;            /* Цвет основного текста */
+
+            --accent: #808080;          /* Основной акцент (Серый/Желтый) */
+            --accent-final: #850000;    /* Акцент для Финала (Красный) */
+            --ans-color: #C90000;       /* Цвет правильных ответов */
+
+            --input-bg: #1a1a1a;        /* Фон полей ввода */
+            --input-border: #333;       /* Цвет рамок полей ввода */
+            --table-border: #2a2a35;    /* Цвет разделителей в таблице */
+        }
+
+        /* === БАЗОВЫЕ СТИЛИ === */
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .header {
+            max-width: 800px;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .back-btn {
+            text-decoration: none;
+            color: var(--accent);
+            font-weight: bold;
+            font-size: 0.9rem;
+            border: 1px solid var(--accent);
+            padding: 5px 15px;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+
+        .back-btn:hover { background: var(--accent); color: #000; }
+
+        .search-wrapper, .tips, #qaTable, #finalTable {
+            max-width: 800px;
+            width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .search-box { margin-bottom: 20px; }
+
+        .search-box input {
+            width: 100%;
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid var(--input-border);
+            background: var(--input-bg);
+            color: white;
+            font-size: 1.1rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        #searchInput:focus { border-color: var(--accent); }
+        #searchFinal:focus { border-color: var(--accent-final); }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            color: var(--accent);
+            padding: 10px;
+            border-bottom: 2px solid var(--input-border);
+            text-transform: uppercase;
+            font-size: 0.8rem;
+        }
+
+        td {
+            padding: 15px 10px;
+            border-bottom: 1px solid var(--table-border);
+            background: var(--row-bg);
+        }
+
+        .ans { color: var(--ans-color); font-weight: bold; }
+
+        .tips {
+            margin: 40px auto;
+            background: var(--tips-bg);
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid var(--accent);
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <a href="index.html" class="back-btn">← МЕНЮ</a>
+    <h2 style="color: var(--accent); margin: 0;">TRIVIA MURDER PARTY</h2>
+</div>
+
+<div class="search-wrapper">
+    <div class="search-box">
+        <label style="color: var(--accent); font-size: 0.8rem; margin-left: 5px;"><strong>ОБЫЧНЫЕ ВОПРОСЫ</strong></label>
+        <input type="text" id="searchInput" placeholder="🔍 Введите вопрос ...">
+    </div>
+    <div class="search-box">
+        <label style="color: var(--accent-final); font-size: 0.8rem; margin-left: 5px;"><strong>ФИНАЛЬНЫЙ РАУНД</strong></label>
+        <input type="text" id="searchFinal" placeholder="💀 Введите категорию ...">
+    </div>
+</div>
+
+<table id="qaTable" style="display: none; margin-top: 20px;">
+    <thead>
+        <tr><th>Вопрос</th><th>Ответ</th></tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+</table>
+
+<table id="finalTable" style="display: none; margin-top: 20px;">
+    <thead>
+        <tr><th>Категория</th><th>Правильные варианты</th></tr>
+    </thead>
+    <tbody id="finalBody"></tbody>
+</table>
+
+<div class="tips">
+    <h3>💡 Мини-игры в комнате смерти:</h3>
+    <ul>
+        <li><strong>Правила пальцев:</strong> Мужчины всегда выбирают мизинец.</li>
+        <li><strong>Память:</strong> Всегда будь готов сфоткать экран.</li>
+        <li><strong>Математика:</strong> Бро, просто решай примеры и не ошибайся.</li>
+    </ul>
+</div>
+
+<script src="content/data_tmp1.js"></script>
+<script src="content/data_tmp1_final.js"></script>
+
+<script>
+    window.onload = function() {
+        const tableBody = document.getElementById('tableBody');
+        const finalBody = document.getElementById('finalBody');
+        const qaTable = document.getElementById('qaTable');
+        const finalTable = document.getElementById('finalTable');
+        const searchInput = document.getElementById('searchInput');
+        const searchFinal = document.getElementById('searchFinal');
+
+        // 1. Отрисовка обычных раундов
+        if (typeof DB_DATA !== 'undefined') {
+            tableBody.innerHTML = DB_DATA.content.map(item => {
+                const correctObj = item.choices.find(c => c.correct);
+                return `<tr><td>${item.text}</td><td class="ans">${correctObj ? correctObj.text : '-'}</td></tr>`;
+            }).join('');
+        }
+
+        // 2. Отрисовка Финала
+        if (typeof DB_DATA_FINAL !== 'undefined') {
+            finalBody.innerHTML = DB_DATA_FINAL.content.map(item => {
+                const correctList = item.choices.filter(c => c.correct).map(c => c.text).join(", ");
+                return `<tr><td style="color: var(--accent-final); font-weight: bold;">${item.text}</td><td class="ans">${correctList}</td></tr>`;
+            }).join('');
+        }
+
+        // Универсальная функция поиска
+        const handleSearch = (input, table, tbody) => {
+            const filter = input.value.trim().toLowerCase();
+            const rows = tbody.getElementsByTagName('tr');
+            if (filter === "") { table.style.display = "none"; return; }
+
+            let hasResults = false;
+            for (let row of rows) {
+                const match = row.textContent.toLowerCase().includes(filter);
+                row.style.display = match ? "" : "none";
+                if (match) hasResults = true;
+            }
+            table.style.display = hasResults ? "table" : "none";
+        };
+
+        searchInput.addEventListener('input', () => handleSearch(searchInput, qaTable, tableBody));
+        searchFinal.addEventListener('input', () => handleSearch(searchFinal, finalTable, finalBody));
+    };
+</script>
+</body>
+</html>
