@@ -13,7 +13,7 @@
             --text: #ffffff;
             --accent: #d400ff;
             --accent-final: #00f2ff;
-            --accent-end: #ff3333;   /* Красный для концовок */
+            --accent-end: #ff3333;
             --accent-mirror: #39ff14;
             --accent-dict: #ffcc00;
             --accent-mind: #0500CF;
@@ -23,54 +23,78 @@
             --table-border: #2a2a35;
         }
 
+        html { scrollbar-gutter: stable; overflow-y: scroll; }
         * { box-sizing: border-box; }
         body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 20px; }
+
         .header { max-width: 800px; margin: 0 auto 20px; display: flex; align-items: center; justify-content: space-between; }
         .back-btn { text-decoration: none; color: var(--accent); font-weight: bold; font-size: 0.9rem; border: 1px solid var(--accent); padding: 5px 15px; border-radius: 5px; transition: 0.3s; }
         .back-btn:hover { background: var(--accent); color: #000; }
 
-        .search-wrapper, .tips, table, .mirror-display { max-width: 800px; width: 100%; margin-left: auto; margin-right: auto; }
+        .search-wrapper, .tips, table, .mirror-display, .pass-card { max-width: 800px; width: 100%; margin-left: auto; margin-right: auto; }
         .search-box { margin-bottom: 20px; }
 
         input, select {
             width: 100%; padding: 15px; border-radius: 8px; border: 2px solid var(--input-border);
             background: var(--input-bg); color: white; font-size: 1.1rem; outline: none; transition: 0.3s;
-            cursor: pointer;
         }
+        input:focus { border-color: var(--accent); }
 
-        #searchInput:focus { border-color: var(--accent); }
-        #searchFinal:focus { border-color: var(--accent-final); }
-        #searchEnd:focus { border-color: var(--accent-end); } /* Фокус для концовок */
-        #mirrorSelect:focus { border-color: var(--accent-mirror); }
-        #searchDict:focus { border-color: var(--accent-dict); }
-        #searchMind:focus { border-color: var(--accent-mind); }
-
-        table { border-collapse: collapse; margin-top: 20px; display: none; }
+        table { border-collapse: collapse; margin-top: 20px; display: none; width: 100%; }
         th { text-align: left; color: var(--accent); padding: 10px; border-bottom: 2px solid var(--input-border); text-transform: uppercase; font-size: 0.8rem; }
         td { padding: 15px 10px; border-bottom: 1px solid var(--table-border); background: var(--row-bg); }
         .ans { color: var(--ans-color); font-weight: bold; }
 
-        /* Окно вывода Зеркала */
-        .mirror-display {
-            display: none; margin-top: 20px; background: #000; border: 2px solid var(--accent-mirror);
-            border-radius: 12px; padding: 20px; text-align: center;
-            box-shadow: 0 0 15px rgba(57, 255, 20, 0.2);
+        /* === ВЗЛОМ ПАРОЛЯ (ИСПРАВЛЕННЫЙ ДИЗАЙН) === */
+        .pass-card {
+            background: #12121a; border: 1px solid #333;
+            border-radius: 12px; padding: 25px; margin-top: 50px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
+        .pass-grid { display: flex; gap: 15px; justify-content: center; margin-bottom: 20px; }
+        .pass-slot { display: flex; flex-direction: column; gap: 10px; align-items: center; }
+
+        .pass-input {
+            width: 60px; height: 90px; background: #000; border: 2px solid #444;
+            border-radius: 8px; color: var(--accent-final);
+            font-size: 2.1rem; /* Уменьшено для буквы Ж */
+            text-align: center; text-transform: uppercase; font-weight: bold;
+            outline: none; transition: 0.3s;
+            padding: 0; /* Убраны внутренние отступы */
+            line-height: 90px; /* Центровка по вертикали */
+        }
+        .pass-input:focus { border-color: var(--accent-final); box-shadow: 0 0 15px rgba(0,242,255,0.2); }
+
+        .pass-status {
+            width: 60px; height: 40px; background: #1a1a1a; border: 1px solid #333;
+            border-radius: 6px; cursor: pointer; display: flex; align-items: center;
+            justify-content: center; transition: 0.2s; color: #444; font-size: 1.2rem;
+        }
+        .pass-status.active {
+            background: var(--ans-color); border-color: var(--ans-color);
+            color: #000; box-shadow: 0 0 15px var(--ans-color);
+        }
+
+        .pass-btn-group { display: flex; gap: 10px; justify-content: center; }
+        .btn-pass {
+            padding: 12px 25px; border-radius: 6px; border: none; cursor: pointer;
+            font-weight: bold; text-transform: uppercase; font-size: 0.9rem; transition: 0.3s;
+        }
+
+        .pass-results { margin-top: 20px; text-align: center; min-height: 60px; padding: 15px; background: rgba(0,0,0,0.3); border-radius: 8px; }
+        .pass-tag {
+            display: inline-block; background: transparent; color: var(--accent-final);
+            border: 1px solid var(--accent-final); padding: 8px 18px; border-radius: 6px;
+            margin: 5px; cursor: pointer; font-weight: bold; transition: 0.2s;
+        }
+        .pass-tag:hover { background: var(--accent-final); color: #000; }
+
+        /* Остальные стили */
+        .mirror-display { display: none; margin-top: 20px; background: #000; border: 2px solid var(--accent-mirror); border-radius: 12px; padding: 20px; text-align: center; }
         .mirror-canvas-img { max-width: 100%; height: auto; filter: drop-shadow(0 0 8px var(--accent-mirror)); }
-
-        .dict-text {
-            font-size: 1rem; line-height: 1.5; background: rgba(0,0,0,0.2);
-            padding: 10px; border-radius: 4px; border-left: 3px solid var(--accent-dict);
-        }
-
-        .mind-tag {
-            display: inline-block; background: #2a2a35; color: var(--ans-color);
-            padding: 4px 8px; margin: 2px; border-radius: 4px; font-size: 0.85rem; border: 1px solid #333;
-        }
-        .alt-text { color: #888; font-size: 0.75rem; margin-left: 5px; font-weight: normal; }
-
+        .dict-text { font-size: 1rem; line-height: 1.5; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 4px; border-left: 3px solid var(--accent-dict); }
+        .mind-tag { display: inline-block; background: #2a2a35; color: var(--ans-color); padding: 4px 8px; margin: 2px; border-radius: 4px; font-size: 0.85rem; border: 1px solid #333; }
         .tips { margin: 40px auto; background: var(--tips-bg); padding: 20px; border-radius: 12px; border-left: 4px solid var(--accent); }
-        i { font-style: italic; color: inherit; }
     </style>
 </head>
 <body>
@@ -89,12 +113,10 @@
         <label style="color: var(--accent-final); font-size: 0.8rem; margin-left: 5px;"><strong>ФИНАЛЬНЫЙ РАУНД</strong></label>
         <input type="text" id="searchFinal" placeholder="💀 Введите категорию ...">
     </div>
-
     <div class="search-box">
         <label style="color: var(--accent-end); font-size: 0.8rem; margin-left: 5px;"><strong>КОНЦОВКИ</strong></label>
         <input type="text" id="searchEnd" placeholder="🩸 Введите вопрос концовки ...">
     </div>
-
     <div class="search-box">
         <label style="color: var(--accent-mind); font-size: 0.8rem; margin-left: 5px;"><strong>ЕДИНОМЫСЛИЕ</strong></label>
         <input type="text" id="searchMind" placeholder="🧠 Введите категорию ...">
@@ -102,12 +124,10 @@
     <div class="search-box">
         <label style="color: var(--accent-dict); font-size: 0.8rem; margin-left: 5px;"><strong>ДИКТАНТ</strong></label>
         <input type="text" id="searchDict" placeholder="✍️ Начинайте писать ...">
-        </div>
+    </div>
     <div class="search-box">
         <label style="color: var(--accent-mirror); font-size: 0.8rem; margin-left: 5px;"><strong>ЗЕРКАЛО</strong></label>
-        <select id="mirrorSelect">
-            <option value="">✍️ Нажмите, чтобы выбрать слово ...</option>
-        </select>
+        <select id="mirrorSelect"><option value="">✍️ Выберите слово ...</option></select>
     </div>
 </div>
 
@@ -116,175 +136,204 @@
     <img id="mirrorImage" class="mirror-canvas-img">
 </div>
 
-<table id="qaTable">
-    <thead><tr><th>Вопрос</th><th>Ответ</th></tr></thead>
-    <tbody id="tableBody"></tbody>
-</table>
+<table id="qaTable"><thead><tr><th>Вопрос</th><th>Ответ</th></tr></thead><tbody id="tableBody"></tbody></table>
+<table id="finalTable"><thead><tr><th>Категория</th><th>Варианты</th></tr></thead><tbody id="finalBody"></tbody></table>
+<table id="endTable"><thead><tr><th>Вопрос</th><th>Ответ</th></tr></thead><tbody id="endBody"></tbody></table>
+<table id="mindTable"><thead><tr><th>Категория</th><th>Варианты</th></tr></thead><tbody id="mindBody"></tbody></table>
+<table id="dictTable"><thead><tr><th>Текст</th></tr></thead><tbody id="dictBody"></tbody></table>
 
-<table id="finalTable">
-    <thead><tr><th>Категория</th><th>Варианты</th></tr></thead>
-    <tbody id="finalBody"></tbody>
-</table>
-
-<table id="endTable">
-    <thead><tr><th style="color: var(--accent-end);">Вопрос концовки</th><th>Ответ</th></tr></thead>
-    <tbody id="endBody"></tbody>
-</table>
-
-<table id="mindTable">
-    <thead><tr><th style="color: var(--accent-mind);">Категория</th><th>Все варианты</th></tr></thead>
-    <tbody id="mindBody"></tbody>
-</table>
-
-<table id="dictTable">
-    <thead><tr><th style="color: var(--accent-dict);">Текст для ввода</th></tr></thead>
-    <tbody id="dictBody"></tbody>
-</table>
+<div class="pass-card">
+    <h3 style="color: var(--accent-final); text-align: center; margin-top: 0; font-size: 1rem; letter-spacing: 3px;">PASSWORD CRACKER</h3>
+    <div class="pass-grid">
+        <div class="pass-slot">
+            <input type="text" maxlength="1" class="pass-input" id="p0">
+            <div class="pass-status" id="s0" onclick="togglePassStatus(0)">✔</div>
+        </div>
+        <div class="pass-slot">
+            <input type="text" maxlength="1" class="pass-input" id="p1">
+            <div class="pass-status" id="s1" onclick="togglePassStatus(1)">✔</div>
+        </div>
+        <div class="pass-slot">
+            <input type="text" maxlength="1" class="pass-input" id="p2">
+            <div class="pass-status" id="s2" onclick="togglePassStatus(2)">✔</div>
+        </div>
+        <div class="pass-slot">
+            <input type="text" maxlength="1" class="pass-input" id="p3">
+            <div class="pass-status" id="s3" onclick="togglePassStatus(3)">✔</div>
+        </div>
+    </div>
+    <div class="pass-btn-group">
+        <button class="btn-pass" style="background: var(--accent-final); color: #000;" onclick="solvePassword()">ANALYSIS</button>
+        <button class="btn-pass" style="background: #333; color: #fff;" onclick="resetPasswordSolver()">RESET</button>
+    </div>
+    <div id="passSuggestions" class="pass-results"></div>
+</div>
 
 <div class="tips">
     <h3>💡 Советы по выживанию:</h3>
     <ul>
-        <li><strong>Единомыслие:</strong> Бро. Просто выбери не то, что выбрали другие.</li>
-        <li><strong>Зеркало:</strong> Негоже подклядывать за старыми женщинами... Тем более мертвыми.</li>
-        <li><strong>Концовки:</strong> Смотри не обосрись в последнюю секунду.</li>
+        <li><strong>Пароль:</strong> Жми на плитку под буквой, если она стала ЗЕЛЕНОЙ в игре.</li>
+        <li><strong>Единомыслие:</strong> Выбери не то, что выбрали другие.</li>
+        <li><strong>Зеркало:</strong> Негоже подглядывать за мертвыми.</li>
     </ul>
 </div>
 
 <script src="content/data_tmp2.js"></script>
 <script src="content/data_tmp2_final.js"></script>
-<script src="content/data_tmp2_endings.js"></script> <script src="content/data_tmp2_mirror.js"></script>
+<script src="content/data_tmp2_endings.js"></script>
+<script src="content/data_tmp2_mirror.js"></script>
 <script src="content/data_tmp2_dict.js"></script>
 <script src="content/data_tmp2_mind.js"></script>
+<script src="content/data_tmp2_passwords.js"></script>
 
 <script>
-    function drawPattern(lines) {
-        const canvas = document.createElement('canvas');
-        canvas.width = 500; canvas.height = 180;
-        const ctx = canvas.getContext('2d');
-        ctx.fillStyle = "#000"; ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.strokeStyle = "#39ff14"; ctx.lineWidth = 4; ctx.lineCap = "round"; ctx.lineJoin = "round";
-        lines.forEach(line => {
-            const points = line.points.split('|').map(p => p.split(',').map(Number));
-            ctx.beginPath();
-            points.forEach((pt, i) => {
-                const x = pt[0] * 1.5; const y = pt[1] * 1.3;
-                if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    // --- ПАРОЛЬ ---
+    let passPool = [];
+    let confirmed = [null, null, null, null];
+    let excluded = [new Set(), new Set(), new Set(), new Set()];
+
+    function togglePassStatus(idx) {
+        document.getElementById(`s${idx}`).classList.toggle('active');
+    }
+
+    function resetPasswordSolver() {
+        confirmed = [null, null, null, null];
+        excluded = [new Set(), new Set(), new Set(), new Set()];
+        for(let i=0; i<4; i++) {
+            document.getElementById(`p${i}`).value = '';
+            document.getElementById(`s${i}`).classList.remove('active');
+        }
+        passPool = (typeof DB_PASSWORDS !== 'undefined') ? [...DB_PASSWORDS] : [];
+        renderPass();
+    }
+
+    function solvePassword() {
+        const letters = [0,1,2,3].map(i => document.getElementById(`p${i}`).value.toLowerCase());
+        const checks = [0,1,2,3].map(i => document.getElementById(`s${i}`).classList.contains('active'));
+
+        if (letters.some(l => l === "")) return;
+
+        for(let i=0; i<4; i++) {
+            if (checks[i]) confirmed[i] = letters[i];
+            else excluded[i].add(letters[i]);
+        }
+
+        passPool = passPool.filter(word => {
+            const w = word.toLowerCase();
+            for(let i=0; i<4; i++) {
+                if (confirmed[i] && w[i] !== confirmed[i]) return false;
+                if (excluded[i].has(w[i])) return false;
+            }
+            return true;
+        });
+        renderPass();
+    }
+
+    function renderPass() {
+        const container = document.getElementById('passSuggestions');
+        if (passPool.length === 0) {
+            container.innerHTML = '<span style="color: var(--accent-end)">NO MATCHES FOUND</span>';
+            return;
+        }
+
+        const freq = [{}, {}, {}, {}];
+        passPool.forEach(w => { for(let i=0; i<4; i++) freq[i][w[i]] = (freq[i][w[i]] || 0) + 1; });
+        const scored = passPool.map(w => {
+            let s = 0; for(let i=0; i<4; i++) s += freq[i][w[i]];
+            return { word: w, score: s };
+        }).sort((a, b) => b.score - a.score);
+
+        container.innerHTML = `<div style="color: #666; font-size: 0.7rem; margin-bottom: 10px;">CANDIDATES: ${passPool.length}</div>` +
+            scored.slice(0, 6).map(s => `<div class="pass-tag" onclick="usePass('${s.word}')">${s.word.toUpperCase()}</div>`).join('');
+    }
+
+    function usePass(w) {
+        for(let i=0; i<4; i++) {
+            document.getElementById(`p${i}`).value = w[i];
+            const btn = document.getElementById(`s${i}`);
+            if (confirmed[i] === w[i]) btn.classList.add('active');
+            else btn.classList.remove('active');
+        }
+    }
+
+    // --- ОСТАЛЬНОЕ ---
+    window.onload = function() {
+        resetPasswordSolver();
+        const parseJackText = (t) => t ? t.replace(/\[[^\]]+=[^\]]+\]/g, '').replace(/\[i\]/g, '<i>').replace(/\[\/i\]/g, '</i>').trim() : '-';
+
+        const render = (data, bodyId, rowFn) => {
+            const list = Array.isArray(data) ? data : (data ? data.content : []);
+            document.getElementById(bodyId).innerHTML = list.map(rowFn).join('');
+        };
+
+        if (typeof DB_DATA !== 'undefined') render(DB_DATA, 'tableBody', item => {
+            const c = item.choices ? item.choices.find(x => x.correct) : null;
+            return `<tr><td>${parseJackText(item.text)}</td><td class="ans">${c ? parseJackText(c.text) : '-'}</td></tr>`;
+        });
+
+        if (typeof DB_DATA_FINAL !== 'undefined') render(DB_DATA_FINAL, 'finalBody', item => {
+            const list = item.choices ? item.choices.filter(x => x.correct).map(x => parseJackText(x.text)).join(", ") : '-';
+            return `<tr><td style="color:var(--accent-final); font-weight:bold;">${parseJackText(item.text)}</td><td class="ans">${list}</td></tr>`;
+        });
+
+        if (typeof DB_ENDINGS !== 'undefined') render(DB_ENDINGS, 'endBody', item => {
+            const c = item.choices ? item.choices.find(x => x.correct) : null;
+            return `<tr><td style="color:var(--accent-end); font-weight:bold;">${parseJackText(item.text)}</td><td class="ans">${c ? parseJackText(c.text) : '-'}</td></tr>`;
+        });
+
+        if (typeof DB_MIND !== 'undefined') render(DB_MIND, 'mindBody', item => {
+            const ans = item.answers.map(a => `<div class="mind-tag">${a.answer}${a.alt && a.alt[0] !== "" ? `<span class="alt-text">(${a.alt.join(', ')})</span>` : ''}</div>`).join('');
+            return `<tr><td style="color: var(--accent-mind); font-weight: bold;">${parseJackText(item.text)}</td><td>${ans}</td></tr>`;
+        });
+
+        if (typeof DB_DICT !== 'undefined') render(DB_DICT, 'dictBody', item => `<tr><td><div class="dict-text">${parseJackText(Array.isArray(item.text) ? item.text.join(' ') : item.text)}</div></td></tr>`);
+
+        const search = (id, tid, bid) => {
+            const input = document.getElementById(id), table = document.getElementById(tid), rows = document.getElementById(bid).getElementsByTagName('tr');
+            input.addEventListener('input', () => {
+                const f = input.value.trim().toLowerCase();
+                if (!f) { table.style.display = "none"; return; }
+                let found = false;
+                for (let r of rows) { const m = r.textContent.toLowerCase().includes(f); r.style.display = m ? "" : "none"; if (m) found = true; }
+                table.style.display = found ? "table" : "none";
             });
+        };
+        search('searchInput', 'qaTable', 'tableBody');
+        search('searchFinal', 'finalTable', 'finalBody');
+        search('searchEnd', 'endTable', 'endBody');
+        search('searchMind', 'mindTable', 'mindBody');
+        search('searchDict', 'dictTable', 'dictBody');
+
+        if (typeof DB_MIRROR !== 'undefined') {
+            const dataM = Array.isArray(DB_MIRROR) ? DB_MIRROR : DB_MIRROR.content;
+            dataM.sort((a,b) => a.password.localeCompare(b.password)).forEach((item, i) => {
+                const opt = document.createElement('option'); opt.value = i; opt.textContent = item.password;
+                document.getElementById('mirrorSelect').appendChild(opt);
+            });
+            document.getElementById('mirrorSelect').addEventListener('change', function() {
+                const d = document.getElementById('mirrorDisplay');
+                if (!this.value) d.style.display = "none";
+                else {
+                    const s = dataM[this.value];
+                    document.getElementById('mirrorWordTitle').textContent = s.password.toUpperCase();
+                    document.getElementById('mirrorImage').src = drawPattern(s.lines);
+                    d.style.display = "block";
+                }
+            });
+        }
+    };
+
+    function drawPattern(lines) {
+        const canvas = document.createElement('canvas'); canvas.width = 500; canvas.height = 180;
+        const ctx = canvas.getContext('2d'); ctx.fillStyle = "#000"; ctx.fillRect(0,0,500,180);
+        ctx.strokeStyle = "#39ff14"; ctx.lineWidth = 4; ctx.lineCap = "round"; ctx.lineJoin = "round";
+        lines.forEach(l => {
+            const p = l.points.split('|').map(x => x.split(',').map(Number));
+            ctx.beginPath(); p.forEach((pt, i) => { const x = pt[0]*1.5, y = pt[1]*1.3; if (i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y); });
             ctx.stroke();
         });
         return canvas.toDataURL();
     }
-
-    window.onload = function() {
-        const parseJackText = (text) => {
-    if (!text) return '-';
-    // 1. Удаляем технический мусор типа [EventName=HOST/AltHost]
-    // Ищет всё, что внутри [], где есть знак "="
-    let cleanText = text.replace(/\[[^\]]+=[^\]]+\]/g, '');
-
-    // 2. Заменяем игровые теги курсива на HTML
-    cleanText = cleanText.replace(/\[i\]/g, '<i>').replace(/\[\/i\]/g, '</i>');
-
-    return cleanText.trim(); // Убираем лишние пробелы по краям
-};
-
-        // 1. Обычные вопросы
-        if (typeof DB_DATA !== 'undefined') {
-            const data = Array.isArray(DB_DATA) ? DB_DATA : DB_DATA.content;
-            document.getElementById('tableBody').innerHTML = data.map(item => {
-                const correctObj = item.choices ? item.choices.find(c => c.correct) : null;
-                return `<tr><td>${parseJackText(item.text)}</td><td class="ans">${correctObj ? parseJackText(correctObj.text) : '-'}</td></tr>`;
-            }).join('');
-        }
-
-        // 2. Финал
-        if (typeof DB_DATA_FINAL !== 'undefined') {
-            const dataFinal = Array.isArray(DB_DATA_FINAL) ? DB_DATA_FINAL : DB_DATA_FINAL.content;
-            document.getElementById('finalBody').innerHTML = dataFinal.map(item => {
-                const correctList = item.choices ? item.choices.filter(c => c.correct).map(c => parseJackText(c.text)).join(", ") : '-';
-                return `<tr><td style="color:var(--accent-final); font-weight:bold;">${parseJackText(item.text)}</td><td class="ans">${correctList}</td></tr>`;
-            }).join('');
-        }
-
-        // ДОБАВЛЕНО: 2.5 Концовки
-        if (typeof DB_ENDINGS !== 'undefined') {
-            const dataEnd = Array.isArray(DB_ENDINGS) ? DB_ENDINGS : DB_ENDINGS.content;
-            document.getElementById('endBody').innerHTML = dataEnd.map(item => {
-                const correctObj = item.choices ? item.choices.find(c => c.correct) : null;
-                return `<tr><td style="color:var(--accent-end); font-weight:bold;">${parseJackText(item.text)}</td><td class="ans">${correctObj ? parseJackText(correctObj.text) : '-'}</td></tr>`;
-            }).join('');
-        }
-
-        // 3. Единый разум
-        if (typeof DB_MIND !== 'undefined') {
-            const dataMind = Array.isArray(DB_MIND) ? DB_MIND : DB_MIND.content;
-            document.getElementById('mindBody').innerHTML = dataMind.map(item => {
-                const answersHtml = item.answers.map(a => {
-                    const alts = (a.alt && a.alt[0] !== "") ? `<span class="alt-text">(${a.alt.join(', ')})</span>` : '';
-                    return `<div class="mind-tag">${a.answer}${alts}</div>`;
-                }).join('');
-                return `<tr><td style="color: var(--accent-mind); font-weight: bold;">${parseJackText(item.text)}</td><td>${answersHtml}</td></tr>`;
-            }).join('');
-        }
-
-        // 4. Диктант
-        if (typeof DB_DICT !== 'undefined') {
-            const dataDict = Array.isArray(DB_DICT) ? DB_DICT : DB_DICT.content;
-            document.getElementById('dictBody').innerHTML = dataDict.map(item => {
-                const fullText = Array.isArray(item.text) ? item.text.join(' ') : item.text;
-                return `<tr><td><div class="dict-text">${parseJackText(fullText)}</div></td></tr>`;
-            }).join('');
-        }
-
-        // 5. Зеркало
-        const mirrorSelect = document.getElementById('mirrorSelect');
-        const mirrorDisplay = document.getElementById('mirrorDisplay');
-        const mirrorImage = document.getElementById('mirrorImage');
-        const mirrorWordTitle = document.getElementById('mirrorWordTitle');
-
-        if (typeof DB_MIRROR !== 'undefined') {
-            const dataMirror = Array.isArray(DB_MIRROR) ? DB_MIRROR : DB_MIRROR.content;
-            dataMirror.sort((a, b) => a.password.localeCompare(b.password));
-            dataMirror.forEach((item, index) => {
-                const opt = document.createElement('option');
-                opt.value = index; opt.textContent = item.password;
-                mirrorSelect.appendChild(opt);
-            });
-            mirrorSelect.addEventListener('change', function() {
-                if (this.value === "") { mirrorDisplay.style.display = "none"; }
-                else {
-                    const selected = dataMirror[this.value];
-                    mirrorWordTitle.textContent = selected.password.toUpperCase();
-                    mirrorImage.src = drawPattern(selected.lines);
-                    mirrorDisplay.style.display = "block";
-                }
-            });
-        }
-
-        // Универсальный поиск
-        const setupSearch = (inputId, tableId, bodyId) => {
-            const input = document.getElementById(inputId);
-            const table = document.getElementById(tableId);
-            const rows = document.getElementById(bodyId).getElementsByTagName('tr');
-            input.addEventListener('input', () => {
-                const filter = input.value.trim().toLowerCase();
-                if (filter === "") { table.style.display = "none"; return; }
-                let found = false;
-                for (let row of rows) {
-                    const match = row.textContent.toLowerCase().includes(filter);
-                    row.style.display = match ? "" : "none";
-                    if (match) found = true;
-                }
-                table.style.display = found ? "table" : "none";
-            });
-        };
-
-        setupSearch('searchInput', 'qaTable', 'tableBody');
-        setupSearch('searchFinal', 'finalTable', 'finalBody');
-        setupSearch('searchEnd', 'endTable', 'endBody'); // Поиск для концовок
-        setupSearch('searchMind', 'mindTable', 'mindBody');
-        setupSearch('searchDict', 'dictTable', 'dictBody');
-    };
 </script>
 </body>
 </html>

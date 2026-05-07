@@ -5,107 +5,92 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TRIVIA MURDER PARTY — База данных</title>
     <style>
-        /* === ПАЛИТРА ЦВЕТОВ (Настроено под стиль TMP) === */
+        /* === ПАЛИТРА ЦВЕТОВ (TMP1 в стиле TMP2) === */
         :root {
-            --bg: #0d0d12;              /* Фон страницы */
-            --row-bg: #1c1c24;          /* Фон строк таблицы */
-            --tips-bg: #252530;         /* Фон блока советов */
-            --text: #ffffff;            /* Цвет основного текста */
-
-            --accent: #808080;          /* Основной акцент (Серый/Желтый) */
-            --accent-final: #850000;    /* Акцент для Финала (Красный) */
-            --ans-color: #C90000;       /* Цвет правильных ответов */
-
-            --input-bg: #1a1a1a;        /* Фон полей ввода */
-            --input-border: #333;       /* Цвет рамок полей ввода */
-            --table-border: #2a2a35;    /* Цвет разделителей в таблице */
+            --bg: #0d0d12;
+            --row-bg: #1c1c24;
+            --tips-bg: #252530;
+            --text: #ffffff;
+            --accent: #808080;
+            --accent-final: #850000;
+            --accent-words: #0088cc;
+            --ans-color: #C90000;
+            --input-bg: #1a1a1a;
+            --input-border: #333;
+            --table-border: #2a2a35;
+            --tool-size: 385px;
         }
 
-        /* === БАЗОВЫЕ СТИЛИ === */
+        /* Фикс прыжка контента: скроллбар всегда виден */
+        html { overflow-y: scroll; }
+
         * { box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 20px; user-select: none; }
 
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            margin: 0;
-            padding: 20px;
-        }
-
-        .header {
-            max-width: 800px;
-            margin: 0 auto 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .back-btn {
-            text-decoration: none;
-            color: var(--accent);
-            font-weight: bold;
-            font-size: 0.9rem;
-            border: 1px solid var(--accent);
-            padding: 5px 15px;
-            border-radius: 5px;
-            transition: 0.3s;
-        }
-
+        .header { max-width: 800px; margin: 0 auto 20px; display: flex; align-items: center; justify-content: space-between; }
+        .back-btn { text-decoration: none; color: var(--accent); font-weight: bold; font-size: 0.9rem; border: 1px solid var(--accent); padding: 5px 15px; border-radius: 5px; transition: 0.3s; }
         .back-btn:hover { background: var(--accent); color: #000; }
 
-        .search-wrapper, .tips, #qaTable, #finalTable {
-            max-width: 800px;
-            width: 100%;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
+        .search-wrapper, .tips, table, .tools-wrapper { max-width: 800px; width: 100%; margin-left: auto; margin-right: auto; }
         .search-box { margin-bottom: 20px; }
 
-        .search-box input {
-            width: 100%;
-            padding: 15px;
-            border-radius: 8px;
-            border: 2px solid var(--input-border);
-            background: var(--input-bg);
-            color: white;
-            font-size: 1.1rem;
-            outline: none;
-            transition: border-color 0.3s;
+        input {
+            width: 100%; padding: 15px; border-radius: 8px; border: 2px solid var(--input-border);
+            background: var(--input-bg); color: white; font-size: 1.1rem; outline: none; transition: 0.3s;
+            cursor: pointer;
         }
 
+        /* Индивидуальные фокусы полей */
         #searchInput:focus { border-color: var(--accent); }
         #searchFinal:focus { border-color: var(--accent-final); }
+        #searchWords:focus { border-color: var(--accent-words); }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th {
-            text-align: left;
-            color: var(--accent);
-            padding: 10px;
-            border-bottom: 2px solid var(--input-border);
-            text-transform: uppercase;
-            font-size: 0.8rem;
-        }
-
-        td {
-            padding: 15px 10px;
-            border-bottom: 1px solid var(--table-border);
-            background: var(--row-bg);
-        }
-
+        table { border-collapse: collapse; margin-top: 20px; display: none; width: 100%; }
+        th { text-align: left; color: var(--accent); padding: 10px; border-bottom: 2px solid var(--input-border); text-transform: uppercase; font-size: 0.8rem; }
+        td { padding: 15px 10px; border-bottom: 1px solid var(--table-border); background: var(--row-bg); }
         .ans { color: var(--ans-color); font-weight: bold; }
 
-        .tips {
-            margin: 40px auto;
-            background: var(--tips-bg);
-            padding: 20px;
-            border-radius: 12px;
-            border-left: 4px solid var(--accent);
+        /* === ИНСТРУМЕНТЫ (Адаптивные) === */
+        .tools-wrapper { display: flex; flex-wrap: wrap; gap: 30px; margin-top: 40px; justify-content: center; }
+        .tool-column { display: flex; flex-direction: column; align-items: center; width: var(--tool-size); flex-shrink: 0; }
+        .tool-column h3 { margin: 0 0 10px 0; font-size: 0.85rem; text-transform: uppercase; color: var(--accent-final); letter-spacing: 1px; }
+        .tool-controls { display: flex; gap: 5px; margin-bottom: 15px; }
+
+        .tool-card {
+            background: var(--row-bg); border: 1px solid var(--input-border);
+            padding: 12px; border-radius: 12px; width: 100%; height: var(--tool-size);
+            display: flex; flex-direction: column; overflow: hidden;
         }
+
+        #grid-container { display: grid; gap: 5px; width: 100%; height: 100%; }
+        .grid-cell { background: #2a2a35; border: 1px solid #444; cursor: pointer; border-radius: 4px; transition: background 0.1s; }
+        .grid-cell.active { background: var(--accent-final); box-shadow: 0 0 10px var(--accent-final); }
+
+        /* Память */
+        .mem-display-row { display: flex; gap: 6px; width: 100%; height: 85px; justify-content: center; align-items: center; margin-bottom: 10px; }
+        .mem-card-view {
+            flex: 1; height: 100%; background: #000; border: 3px solid #333; display: flex;
+            align-items: center; justify-content: center; font-size: 2rem; border-radius: 8px; transition: 0.15s; max-width: 58px; position: relative;
+        }
+        .mem-card-view::before { content: attr(data-num); position: absolute; top: -16px; font-size: 0.6rem; color: var(--accent); font-weight: bold; }
+
+        .mem-controls-row { display: flex; gap: 6px; width: 100%; flex-grow: 1; justify-content: center; padding: 5px 0; }
+        .mem-btn-slot { flex: 1; max-width: 58px; display: flex; flex-direction: column; gap: 5px; align-items: center; justify-content: center; background: #12121a; border-radius: 6px; padding: 5px 0; }
+
+        .m-btn, .c-btn { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 5px; border: 1px solid #333; transition: 0.1s; font-size: 0.9rem; }
+        .m-btn { background: #1a1a1a; color: #fff; }
+        .m-btn.active { background: #444; border-color: #fff; box-shadow: 0 0 5px #fff; }
+        .c-btn.active { outline: 2px solid #fff; outline-offset: 1px; z-index: 1; }
+
+        /* Кнопки переключения размеров */
+        .btn-small { background: #1a1a1a; color: #fff; border: 1px solid #444; padding: 6px 12px; font-size: 0.75rem; cursor: pointer; border-radius: 5px; }
+        .btn-small.active { background: var(--accent-final); border-color: var(--accent-final); }
+
+        /* Стили слов */
+        .word-tag { display: inline-block; background: #2a2a35; padding: 4px 10px; border-radius: 4px; margin: 2px; border: 1px solid #444; }
+        .word-len { color: var(--accent-words); font-weight: bold; margin-right: 5px; font-size: 0.75rem; }
+
+        .tips { margin: 40px auto; background: var(--tips-bg); padding: 20px; border-radius: 12px; border-left: 4px solid var(--accent); }
     </style>
 </head>
 <body>
@@ -124,21 +109,39 @@
         <label style="color: var(--accent-final); font-size: 0.8rem; margin-left: 5px;"><strong>ФИНАЛЬНЫЙ РАУНД</strong></label>
         <input type="text" id="searchFinal" placeholder="💀 Введите категорию ...">
     </div>
+    <div class="search-box">
+        <label style="color: var(--accent-words); font-size: 0.8rem; margin-left: 5px;"><strong>СЛОВА</strong></label>
+        <input type="text" id="searchWords" placeholder="🍎 Введите доступные буквы ...">
+    </div>
 </div>
 
-<table id="qaTable" style="display: none; margin-top: 20px;">
-    <thead>
-        <tr><th>Вопрос</th><th>Ответ</th></tr>
-    </thead>
-    <tbody id="tableBody"></tbody>
-</table>
+<table id="qaTable"><thead><tr><th>Вопрос</th><th>Ответ</th></tr></thead><tbody id="tableBody"></tbody></table>
+<table id="finalTable"><thead><tr><th>Категория</th><th>Варианты</th></tr></thead><tbody id="finalBody"></tbody></table>
+<table id="wordsTable"><thead><tr><th style="color: var(--accent-words);">ТОП-25 САМЫХ ДЛИННЫХ ВАРИАНТОВ</th></tr></thead><tbody id="wordsBody"></tbody></table>
 
-<table id="finalTable" style="display: none; margin-top: 20px;">
-    <thead>
-        <tr><th>Категория</th><th>Правильные варианты</th></tr>
-    </thead>
-    <tbody id="finalBody"></tbody>
-</table>
+<div class="tools-wrapper">
+    <div class="tool-column">
+        <h3>Плитки</h3>
+        <div class="tool-controls" id="grid-btns">
+            <button class="btn-small" onclick="initGrid(4, this)">4x4</button>
+            <button class="btn-small" onclick="initGrid(5, this)">5x5</button>
+            <button class="btn-small active" onclick="initGrid(6, this)">6x6</button>
+            <button class="btn-small" style="color:#ff4444" onclick="resetGrid()">Clear</button>
+        </div>
+        <div class="tool-card"><div id="grid-container"></div></div>
+    </div>
+
+    <div class="tool-column">
+        <h3>Память</h3>
+        <div class="tool-controls" id="mem-size-btns">
+            <button class="btn-small" onclick="initMemory(4, this)">4</button>
+            <button class="btn-small" onclick="initMemory(5, this)">5</button>
+            <button class="btn-small active" onclick="initMemory(6, this)">6</button>
+            <button class="btn-small" style="color:#ff4444" onclick="resetMemory()">Reset</button>
+        </div>
+        <div class="tool-card" id="mem-card-main"></div>
+    </div>
+</div>
 
 <div class="tips">
     <h3>💡 Мини-игры в комнате смерти:</h3>
@@ -151,49 +154,156 @@
 
 <script src="content/data_tmp1.js"></script>
 <script src="content/data_tmp1_final.js"></script>
+<script src="content/data_tmp1_words.js"></script>
 
 <script>
+    let isMouseDown = false;
+    let activeBrushModule = null;
+    let paintMode = true;
+    let currentMemSize = 6;
+    let brushType = null;
+    let brushValue = null;
+
     window.onload = function() {
         const tableBody = document.getElementById('tableBody');
         const finalBody = document.getElementById('finalBody');
+        const wordsBody = document.getElementById('wordsBody');
         const qaTable = document.getElementById('qaTable');
         const finalTable = document.getElementById('finalTable');
+        const wordsTable = document.getElementById('wordsTable');
         const searchInput = document.getElementById('searchInput');
         const searchFinal = document.getElementById('searchFinal');
+        const searchWords = document.getElementById('searchWords');
 
-        // 1. Отрисовка обычных раундов
         if (typeof DB_DATA !== 'undefined') {
-            tableBody.innerHTML = DB_DATA.content.map(item => {
-                const correctObj = item.choices.find(c => c.correct);
+            const data = Array.isArray(DB_DATA) ? DB_DATA : DB_DATA.content;
+            tableBody.innerHTML = data.map(item => {
+                const correctObj = item.choices ? item.choices.find(c => c.correct) : null;
                 return `<tr><td>${item.text}</td><td class="ans">${correctObj ? correctObj.text : '-'}</td></tr>`;
             }).join('');
         }
-
-        // 2. Отрисовка Финала
         if (typeof DB_DATA_FINAL !== 'undefined') {
-            finalBody.innerHTML = DB_DATA_FINAL.content.map(item => {
-                const correctList = item.choices.filter(c => c.correct).map(c => c.text).join(", ");
-                return `<tr><td style="color: var(--accent-final); font-weight: bold;">${item.text}</td><td class="ans">${correctList}</td></tr>`;
+            const dataFinal = Array.isArray(DB_DATA_FINAL) ? DB_DATA_FINAL : DB_DATA_FINAL.content;
+            finalBody.innerHTML = dataFinal.map(item => {
+                const correctList = item.choices ? item.choices.filter(c => c.correct).map(c => c.text).join(", ") : '-';
+                return `<tr><td style="color:var(--accent-final); font-weight:bold;">${item.text}</td><td class="ans">${correctList}</td></tr>`;
             }).join('');
         }
 
-        // Универсальная функция поиска
-        const handleSearch = (input, table, tbody) => {
-            const filter = input.value.trim().toLowerCase();
-            const rows = tbody.getElementsByTagName('tr');
-            if (filter === "") { table.style.display = "none"; return; }
+        const setupSearch = (input, table, body) => {
+            input.addEventListener('input', () => {
+                const filter = input.value.trim().toLowerCase();
+                const rows = body.getElementsByTagName('tr');
+                if (filter === "") { table.style.display = "none"; return; }
+                let found = false;
+                for (let row of rows) {
+                    const match = row.textContent.toLowerCase().includes(filter);
+                    row.style.display = match ? "" : "none";
+                    if (match) found = true;
+                }
+                table.style.display = found ? "table" : "none";
+            });
+        };
+        setupSearch(searchInput, qaTable, tableBody);
+        setupSearch(searchFinal, finalTable, finalBody);
 
-            let hasResults = false;
-            for (let row of rows) {
-                const match = row.textContent.toLowerCase().includes(filter);
-                row.style.display = match ? "" : "none";
-                if (match) hasResults = true;
+        let wordTimeout;
+        searchWords.addEventListener('input', () => {
+            clearTimeout(wordTimeout);
+            wordTimeout = setTimeout(() => {
+                const input = searchWords.value.trim().toLowerCase();
+                if (input.length < 3) { wordsTable.style.display = "none"; return; }
+                const inputCounts = {};
+                for (const char of input) inputCounts[char] = (inputCounts[char] || 0) + 1;
+                const dict = window.RUSSIAN_DICT || [];
+                let solved = [];
+                for (let word of dict) {
+                    if (word.length > input.length || word.length < 3) continue;
+                    let wordCounts = {}; let possible = true;
+                    for (const char of word.toLowerCase()) {
+                        wordCounts[char] = (wordCounts[char] || 0) + 1;
+                        if (!inputCounts[char] || wordCounts[char] > inputCounts[char]) { possible = false; break; }
+                    }
+                    if (possible) solved.push(word);
+                }
+                solved.sort((a, b) => b.length - a.length);
+                const topFive = solved.slice(0, 25);
+                if (topFive.length > 0) {
+                    wordsBody.innerHTML = `<tr><td>${topFive.map(w => `<div class="word-tag"><span class="word-len">${w.length}</span>${w}</div>`).join('')}</td></tr>`;
+                    wordsTable.style.display = "table";
+                } else { wordsTable.style.display = "none"; }
+            }, 300);
+        });
+
+        window.initGrid = function(size, btn) {
+            const container = document.getElementById('grid-container');
+            container.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
+            container.innerHTML = '';
+            if(btn) { document.querySelectorAll('#grid-btns .btn-small').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
+            for(let i=0; i<size*size; i++) {
+                const cell = document.createElement('div'); cell.className = 'grid-cell';
+                cell.onmousedown = (e) => {
+                    isMouseDown = true; activeBrushModule = 'grid';
+                    paintMode = !cell.classList.contains('active'); cell.classList.toggle('active', paintMode); e.preventDefault();
+                };
+                cell.onmouseenter = () => { if (isMouseDown && activeBrushModule === 'grid') cell.classList.toggle('active', paintMode); };
+                container.appendChild(cell);
             }
-            table.style.display = hasResults ? "table" : "none";
         };
 
-        searchInput.addEventListener('input', () => handleSearch(searchInput, qaTable, tableBody));
-        searchFinal.addEventListener('input', () => handleSearch(searchFinal, finalTable, finalBody));
+        const weapons = ['🗡️', '🔨', '💣'];
+        const colors = { 'ЖЕЛ': '#f1c40f', 'ЗЕЛ': '#2ecc71', 'СИН': '#3498db' };
+
+        window.initMemory = function(count, btn) {
+            if (count) currentMemSize = count;
+            const mainCard = document.getElementById('mem-card-main'); mainCard.innerHTML = '';
+            if(btn) { document.querySelectorAll('#mem-size-btns .btn-small').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
+            const displayRow = document.createElement('div'); displayRow.className = 'mem-display-row';
+            const controlsRow = document.createElement('div'); controlsRow.className = 'mem-controls-row';
+            for(let i=0; i<currentMemSize; i++) {
+                const view = document.createElement('div'); view.className = 'mem-card-view'; view.id = `mem-view-${i}`; view.innerText = '❓'; view.setAttribute('data-num', i + 1);
+                displayRow.appendChild(view);
+                const btnSlot = document.createElement('div'); btnSlot.className = 'mem-btn-slot';
+                weapons.forEach(w => {
+                    const b = document.createElement('button'); b.className = 'm-btn'; b.innerText = w;
+                    b.onmousedown = (e) => {
+                        isMouseDown = true; activeBrushModule = 'memory'; brushType = 'weapon'; brushValue = w; updateSlot(i, 'weapon', w); e.preventDefault();
+                    };
+                    b.onmouseenter = () => { if(isMouseDown && activeBrushModule === 'memory' && brushType === 'weapon') updateSlot(i, 'weapon', w); };
+                    btnSlot.appendChild(b);
+                });
+                Object.keys(colors).forEach(c => {
+                    const b = document.createElement('div'); b.className = 'c-btn'; b.style.backgroundColor = colors[c];
+                    b.onmousedown = (e) => {
+                        isMouseDown = true; activeBrushModule = 'memory'; brushType = 'color'; brushValue = colors[c]; updateSlot(i, 'color', colors[c]); e.preventDefault();
+                    };
+                    b.onmouseenter = () => { if(isMouseDown && activeBrushModule === 'memory' && brushType === 'color') updateSlot(i, 'color', colors[c]); };
+                    btnSlot.appendChild(b);
+                });
+                controlsRow.appendChild(btnSlot);
+            }
+            mainCard.appendChild(displayRow); mainCard.appendChild(controlsRow);
+        };
+
+        function updateSlot(idx, type, val) {
+            const view = document.getElementById(`mem-view-${idx}`);
+            const slots = document.querySelectorAll('.mem-btn-slot');
+            if (idx >= slots.length) return;
+            const slot = slots[idx];
+            if (type === 'weapon') { view.innerText = val; slot.querySelectorAll('.m-btn').forEach(b => b.classList.toggle('active', b.innerText === val)); }
+            else { view.style.borderColor = val; slot.querySelectorAll('.c-btn').forEach(b => b.classList.toggle('active', b.style.backgroundColor === hexToRgb(val))); }
+        }
+
+        const hexToRgb = (hex) => {
+            const r = parseInt(hex.slice(1, 3), 16), g = parseInt(hex.slice(3, 5), 16), b = parseInt(hex.slice(5, 7), 16);
+            return `rgb(${r}, ${g}, ${b})`;
+        };
+
+        window.onmouseup = () => { isMouseDown = false; activeBrushModule = null; brushType = null; };
+        window.resetGrid = function() { document.querySelectorAll('.grid-cell').forEach(c => c.classList.remove('active')); };
+        window.resetMemory = function() { initMemory(currentMemSize); };
+
+        initGrid(6); initMemory(6);
     };
 </script>
 </body>
