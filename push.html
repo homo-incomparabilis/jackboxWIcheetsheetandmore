@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ЖМИ НА КНОПКУ — База данных</title>
+    <style>
+        /* === ПАЛИТРА ЦВЕТОВ (Твой дизайн) === */
+        :root {
+            --bg: #0d0d12;
+            --row-bg: #1c1c24;
+            --tips-bg: #252530;
+            --text: #ffffff;
+
+            --accent: #E3E3E3;
+            --ans-color: #00ffcc;       /* Человек / Верный ответ */
+            --alien-color: #ff3366;     /* Пришелец / Ложь */
+
+            --input-bg: #1a1a1a;
+            --input-border: #333;
+            --table-border: #2a2a35;
+
+            /* Цвета отсеков из игры */
+            --drawing: #00f2ff;
+            --morality: #ff00ff;
+            --rating: #ffb347;
+            --writing: #a29bfe;
+        }
+
+        * { box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 20px; }
+
+        /* Шапка: Кнопка слева, Заголовок справа */
+        .header {
+            max-width: 800px;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .back-btn {
+            text-decoration: none;
+            color: var(--accent);
+            font-weight: bold;
+            font-size: 0.9rem;
+            border: 1px solid var(--accent);
+            padding: 5px 15px;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+        .back-btn:hover { background: var(--accent); color: #000; }
+
+        .search-wrapper, .tips, table {
+            max-width: 800px;
+            width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .search-box { margin-bottom: 20px; }
+        .search-box label { font-size: 0.8rem; margin-left: 5px; display: block; margin-bottom: 5px; }
+        .search-box input {
+            width: 100%;
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid var(--input-border);
+            background: var(--input-bg);
+            color: white;
+            font-size: 1.1rem;
+            outline: none;
+        }
+
+        /* Акценты при фокусе */
+        #searchDrawing:focus { border-color: var(--drawing); }
+        #searchMorality:focus { border-color: var(--morality); }
+        #searchRating:focus { border-color: var(--rating); }
+        #searchWriting:focus { border-color: var(--writing); }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; display: none; }
+        th { text-align: left; color: var(--accent); padding: 10px; border-bottom: 2px solid var(--input-border); text-transform: uppercase; font-size: 0.8rem; }
+        td { padding: 15px 10px; border-bottom: 1px solid var(--table-border); background: var(--row-bg); vertical-align: top; }
+
+        /* Оформление карточки */
+        .human-prompt { color: var(--text); font-weight: bold; font-size: 1.1rem; margin-bottom: 10px; }
+        .alien-list { border-top: 1px solid #333; padding-top: 10px; }
+        .alien-item { color: var(--ans-color); font-size: 0.95rem; margin-bottom: 5px; display: block; }
+        .label { font-size: 0.65rem; opacity: 0.5; text-transform: uppercase; margin-right: 10px; font-weight: normal; color: #fff; }
+
+        /* Блок советов с белой полосой */
+        .tips {
+            margin: 40px auto;
+            background: var(--tips-bg);
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid #fff;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <a href="index.html" class="back-btn">← МЕНЮ</a>
+    <h2 style="color: var(--drawing); margin: 0; text-transform: uppercase;">ЖМИ НА КНОПКУ</h2>
+</div>
+
+<div class="search-wrapper">
+    <div class="search-box">
+        <label style="color: var(--drawing);"><strong>ХУДОЖЕСТВЕННЫЙ ОТСЕК</strong></label>
+        <input type="text" id="searchDrawing" placeholder="🔍 Что рисуют люди?">
+    </div>
+    <div class="search-box">
+        <label style="color: var(--morality);"><strong>ПАЛУБА ДИЛЕММ</strong></label>
+        <input type="text" id="searchMorality" placeholder="🔍 Какая моральная дилемма?">
+    </div>
+    <div class="search-box">
+        <label style="color: var(--rating);"><strong>БАР МНЕНИЙ</strong></label>
+        <input type="text" id="searchRating" placeholder="🔍 Какая шкала рейтинга?">
+    </div>
+    <div class="search-box">
+        <label style="color: var(--writing);"><strong>ОТДЕЛ АНКЕТИРОВАНИЯ</strong></label>
+        <input type="text" id="searchWriting" placeholder="🔍 Какой вопрос в анкете?">
+    </div>
+</div>
+
+<table id="tableDrawing"><thead><tr><th>Художественный отсек</th></tr></thead><tbody id="bodyDrawing"></tbody></table>
+<table id="tableMorality"><thead><tr><th>Палуба дилемм</th></tr></thead><tbody id="bodyMorality"></tbody></table>
+<table id="tableRating"><thead><tr><th>Бар мнений</th></tr></thead><tbody id="bodyRating"></tbody></table>
+<table id="tableWriting"><thead><tr><th>Отдел анкетирования</th></tr></thead><tbody id="bodyWriting"></tbody></table>
+
+<div class="tips">
+    <h3>💡 Подсказки для детектива-пришельца:</h3>
+    <ul>
+        <li><strong>Доверие:</strong> Убеди всех в своей невиновности.</li>
+        <li><strong>Доводы:</strong> Найди хорошие обоснования обвинить невиновного.</li>
+        <li><strong>Скорость:</strong> Не тупи. Медленные люди подозрительные.</li>
+    </ul>
+</div>
+
+<script src="content/data_ptb_drawing.js"></script>
+<script src="content/data_ptb_morality.js"></script>
+<script src="content/data_ptb_rating.js"></script>
+<script src="content/data_ptb_writing.js"></script>
+
+<script>
+    window.onload = function() {
+        // Функция перевода массива fields в удобный объект
+        const flattenFields = (fields) => fields.reduce((acc, f) => ({ ...acc, [f.n]: f.v }), {});
+
+        const renderPTB = (data, bodyId) => {
+            const body = document.getElementById(bodyId);
+            if (typeof data === 'undefined') return;
+
+            body.innerHTML = data.map(raw => {
+                const f = flattenFields(raw.fields);
+                const humanText = f.HumanPromptText || f.QuestionText || '???';
+
+                // Собираем все AlienPromptTextN (от 0 до 8)
+                let alienListHtml = '';
+                for (let i = 0; i <= 8; i++) {
+                    const alienText = f['AlienPromptText' + i];
+                    if (alienText && alienText !== "undefined" && alienText.trim() !== "") {
+                        alienListHtml += `<span class="alien-item">• ${alienText}</span>`;
+                    }
+                }
+
+                return `<tr>
+                    <td>
+                        <div class="human-prompt"><span class="label">Человек:</span>${humanText}</div>
+                        <div class="alien-list">
+                            <div class="label" style="margin-bottom: 5px;">Варианты Пришельца:</div>
+                            ${alienListHtml}
+                        </div>
+                    </td>
+                </tr>`;
+            }).join('');
+        };
+
+        // Загрузка данных
+        renderPTB(window.DB_PTB_DRAWING, 'bodyDrawing');
+        renderPTB(window.DB_PTB_MORALITY, 'bodyMorality');
+        renderPTB(window.DB_PTB_RATING, 'bodyRating');
+        renderPTB(window.DB_PTB_WRITING, 'bodyWriting');
+
+        const handleSearch = (input, table, tbody) => {
+            const filter = input.value.trim().toLowerCase();
+            const rows = tbody.getElementsByTagName('tr');
+            if (filter === "") { table.style.display = "none"; return; }
+            let hasResults = false;
+            for (let row of rows) {
+                const match = row.textContent.toLowerCase().includes(filter);
+                row.style.display = match ? "" : "none";
+                if (match) hasResults = true;
+            }
+            table.style.display = hasResults ? "table" : "none";
+        };
+
+        document.getElementById('searchDrawing').oninput = function() { handleSearch(this, document.getElementById('tableDrawing'), document.getElementById('bodyDrawing')); };
+        document.getElementById('searchMorality').oninput = function() { handleSearch(this, document.getElementById('tableMorality'), document.getElementById('bodyMorality')); };
+        document.getElementById('searchRating').oninput = function() { handleSearch(this, document.getElementById('tableRating'), document.getElementById('bodyRating')); };
+        document.getElementById('searchWriting').oninput = function() { handleSearch(this, document.getElementById('tableWriting'), document.getElementById('bodyWriting')); };
+    };
+</script>
+</body>
+</html>
