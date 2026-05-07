@@ -75,7 +75,7 @@
         .mem-card-view::before { content: attr(data-num); position: absolute; top: -16px; font-size: 0.6rem; color: var(--accent); font-weight: bold; }
 
         .mem-controls-row { display: flex; gap: 6px; width: 100%; flex-grow: 1; justify-content: center; padding: 5px 0; }
-        .mem-btn-slot { flex: 1; max-width: 58px; display: flex; flex-direction: column; gap: 5px; align-items: center; justify-content: center; background: #12121a; border-radius: 6px; padding: 5px 0; }
+        .mem-btn-slot { flex: 1; max-width: 58px; display: flex; flex-direction: column; gap: 3px; align-items: center; justify-content: center; background: #12121a; border-radius: 6px; padding: 5px 0; }
 
         .m-btn, .c-btn { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 5px; border: 1px solid #333; transition: 0.1s; font-size: 0.9rem; }
         .m-btn { background: #1a1a1a; color: #fff; }
@@ -144,10 +144,10 @@
 </div>
 
 <div class="tips">
-    <h3>💡 Мини-игры в комнате смерти:</h3>
+    <h3>💡 Советики для хлебушков:</h3>
     <ul>
         <li><strong>Правила пальцев:</strong> Мужчины всегда выбирают мизинец.</li>
-        <li><strong>Память:</strong> Всегда будь готов сфоткать экран.</li>
+        <li><strong>Память:</strong> <s>Всегда будь готов сфоткать экран.</s> Теперь можно записать плитки и карты прямо тут. Рад стараться)</li>
         <li><strong>Математика:</strong> Бро, просто решай примеры и не ошибайся.</li>
     </ul>
 </div>
@@ -251,7 +251,7 @@
             }
         };
 
-        const weapons = ['🗡️', '🔨', '💣'];
+        const weapons = ['🗡️', '🔨', '💣', '🔫'];
         const colors = { 'ЖЕЛ': '#f1c40f', 'ЗЕЛ': '#2ecc71', 'СИН': '#3498db' };
 
         window.initMemory = function(count, btn) {
