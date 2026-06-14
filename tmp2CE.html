@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TRIVIA MURDER PARTY 2 — База данных</title>
+    <title>TRIVIA MURDER PARTY 2 CE — База данных</title>
     <style>
         /* === ПАЛИТРА ЦВЕТОВ TMP2 === */
         :root {
@@ -40,9 +40,13 @@
         }
         input:focus { border-color: var(--accent); }
 
-        table { border-collapse: collapse; margin-top: 20px; display: none; width: 100%; }
+        table { border-collapse: collapse; margin-top: 20px; display: none; width: 100%; table-layout: fixed; }
         th { text-align: left; color: var(--accent); padding: 10px; border-bottom: 2px solid var(--input-border); text-transform: uppercase; font-size: 0.8rem; }
-        td { padding: 15px 10px; border-bottom: 1px solid var(--table-border); background: var(--row-bg); }
+        td { padding: 15px 10px; border-bottom: 1px solid var(--table-border); background: var(--row-bg); white-space: normal; word-break: break-word; }
+
+        th:first-child, td:first-child { width: 70%; }
+        th:last-child, td:last-child { width: 30%; }
+
         .ans { color: var(--ans-color); font-weight: bold; }
 
         /* === ВЗЛОМ ПАРОЛЯ (ИСПРАВЛЕННЫЙ ДИЗАЙН) === */
@@ -102,7 +106,7 @@
 
 <div class="header">
     <a href="index.html" class="back-btn">← МЕНЮ</a>
-    <h2 style="color: var(--accent); margin: 0;">TRIVIA MURDER PARTY 2</h2>
+    <h2 style="color: var(--accent); margin: 0;">TRIVIA MURDER PARTY 2 CE</h2>
 </div>
 
 <div class="search-wrapper">
@@ -116,7 +120,7 @@
     </div>
     <div class="search-box">
         <label style="color: var(--accent-end); font-size: 0.8rem; margin-left: 5px;"><strong>КОНЦОВКИ</strong></label>
-        <input type="text" id="searchEnd" placeholder="🩸 Введите вопрос концовки ...">
+        <input type="text" id="searchEnd" placeholder="🩸 Пока не работает ...">
     </div>
     <div class="search-box">
         <label style="color: var(--accent-mind); font-size: 0.8rem; margin-left: 5px;"><strong>ЕДИНОМЫСЛИЕ</strong></label>
@@ -179,11 +183,11 @@
     </ul>
 </div>
 
-<script src="content/data_tmp2.js"></script>
-<script src="content/data_tmp2_final.js"></script>
-<script src="content/data_tmp2_endings.js"></script>
-<script src="content/data_tmp2_mirror.js"></script>
-<script src="content/data_tmp2_dict.js"></script>
+<script src="content/data_tmp2CE.js"></script>
+<script src="content/data_tmp2_finalCE.js"></script>
+<script src="content/data_tmp2_endingsCE.js"></script>
+<script src="content/data_tmp2_mirrorCE.js"></script>
+<script src="content/data_tmp2_dictCE.js"></script>
 <script src="content/data_tmp2_mind.js"></script>
 <script src="content/data_tmp2_passwords.js"></script>
 
