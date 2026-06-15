@@ -1,0 +1,212 @@
+// ==UserScript==
+// @name         Jackbox.fun Universal TMP2 Room Smasher
+// @namespace    http://tampermonkey.net/
+// @version      2.9.1
+// @description  Автоматически подсвечивает правильные ответы + поддержка верстки TMP3 на jackbox.tv
+// @match        *://*.jackbox.fun/*
+// @match        *://*.jackbox.tv/*
+// @grant        none
+// ==/UserScript==
+
+(function() {
+    'use strict';
+
+    let gridObserved = false;
+
+    function solveExpression(text) {
+        try {
+            let clean = text.replace(/×/g, '*').replace(/÷/g, '/').replace(/[^0-9+\-*/().\s]/g, '');
+            if (!clean) return null;
+            /* eslint-disable-next-line no-eval */
+            return eval(clean);
+        } catch(e) {
+            return null;
+        }
+    }
+
+    function universalSolver() {
+        if (!gridObserved) {
+            const gridWrapper = document.querySelector('#state-grid');
+            if (gridWrapper) {
+                const gridObserver = new MutationObserver(() => universalSolver());
+                gridObserver.observe(gridWrapper, { attributes: true, attributeFilter: ['class', 'style'] });
+                gridObserved = true;
+            }
+        }
+
+        // --- ЭТАП 0: СБОР СТРОКИ ДЛЯ ИГРЫ В СЛОВА (GRID) ---
+        const gridWrapper = document.querySelector('#state-grid');
+        const isGridActive = gridWrapper && !gridWrapper.classList.contains('pt-page-off') && gridWrapper.style.display !== 'none';
+
+        const gridCells = isGridActive ? Array.from(gridWrapper.querySelectorAll('.jbg-grid-text')) : [];
+        const gridString = gridCells.map(cell => cell.innerText.replace(/[\s\u200c\u200b]/g, '')).join('');
+
+        if (gridCells.length === 25 && /[а-яА-ЯёЁa-zA-Z]/.test(gridString)) {
+            let container = document.getElementById('extracted-grid-string');
+
+            if (!container) {
+                container = document.createElement('div');
+                container.id = 'extracted-grid-string';
+                container.style.background = '#111';
+                container.style.color = '#39ff14';
+                container.style.padding = '8px';
+                container.style.fontWeight = 'bold';
+                container.style.fontSize = '1.4rem';
+                container.style.letterSpacing = '3px';
+                container.style.textAlign = 'center';
+                container.style.border = '2px dashed #39ff14';
+                container.style.borderRadius = '5px';
+                container.style.width = '90%';
+                container.style.cursor = 'pointer';
+                container.title = 'Кликни, чтобы скопировать';
+
+                container.style.position = 'fixed';
+                container.style.bottom = '10px';
+                container.style.left = '5%';
+                container.style.zIndex = '99999';
+                container.style.margin = '0';
+
+                container.addEventListener('click', () => {
+                    navigator.clipboard.writeText(container.innerText).then(() => {
+                        const oldBg = container.style.background;
+                        container.style.background = '#39ff14';
+                        container.style.color = '#000';
+                        setTimeout(() => {
+                            container.style.background = oldBg;
+                            container.style.color = '#39ff14';
+                        }, 200);
+                    });
+                });
+                document.body.appendChild(container);
+            }
+            if (container.innerText !== gridString) {
+                container.innerText = gridString;
+                navigator.clipboard.writeText(gridString).catch(() => {});
+            }
+        } else {
+            let container = document.getElementById('extracted-grid-string');
+            if (container) container.remove();
+        }
+
+        // --- ЭТАП 1: ПОДГОТОВКА СЕЛЕКТОРОВ ДЛЯ ДРУГИХ ИГР ---
+        const promptEl = document.querySelector('.message.prompt, #prompt .text, .prompt .text, #make-single-choice-text, .instructions');
+        const buttons = document.querySelectorAll('button.action.choice, button.choice-button, #make-single-choice-choices button, .button-choice, button.choice');
+
+        if (!promptEl || buttons.length === 0) return;
+
+        let instruction = promptEl.innerText.trim();
+        const ariaHiddenEl = promptEl.querySelector('[aria-hidden="true"]');
+        if (ariaHiddenEl) {
+            instruction = ariaHiddenEl.textContent.trim();
+        } else {
+            const clone = promptEl.cloneNode(true);
+            clone.querySelectorAll('.textDescriptions').forEach(el => el.remove());
+            instruction = clone.textContent.trim();
+        }
+
+        let targetIndex = -1;
+        const btnTexts = Array.from(buttons).map(b => b.innerText.trim());
+        const btnNumbers = btnTexts.map(t => parseFloat(t));
+        const isNumeric = btnNumbers.every(n => !isNaN(n));
+        const isNegative = instruction.startsWith('Не');
+
+        // --- ПРОВЕРКА НА ЧИСТУЮ МАТЕМАТИКУ ---
+        if (/[0-9+\-*/×÷]/.test(instruction) && !/[а-яА-Яa-zA-Z]/.test(instruction)) {
+            const correctAnswer = solveExpression(instruction);
+            if (correctAnswer !== null) {
+                targetIndex = btnNumbers.indexOf(correctAnswer);
+            }
+        }
+        // --- РЕЖИМ "ПРАВИЛА" ---
+        else {
+            if (instruction.includes('кнопку') || instruction.includes('кнопка')) {
+                let numWord = instruction.match(/(первую|вторую|третью|четвертую|четвёртую)/);
+                if (numWord) {
+                    let idx = -1;
+                    if (numWord[0] === 'первую') idx = 0;
+                    if (numWord[0] === 'вторую') idx = 1;
+                    if (numWord[0] === 'третью') idx = 2;
+                    if (numWord[0] === 'четвертую' || numWord[0] === 'четвёртую') idx = 3;
+
+                    if (isNegative) {
+                        targetIndex = (idx === 0) ? 1 : 0;
+                    } else {
+                        targetIndex = idx;
+                    }
+                }
+            }
+            else if (isNumeric) {
+                if (instruction.includes('нечетное') || instruction.includes('нечётное')) {
+                    let idx = btnNumbers.findIndex(n => n % 2 !== 0);
+                    targetIndex = isNegative ? btnNumbers.findIndex(n => n % 2 === 0) : idx;
+                }
+                else if (instruction.includes('четное') || instruction.includes('чётное')) {
+                    let idx = btnNumbers.findIndex(n => n % 2 === 0);
+                    targetIndex = isNegative ? btnNumbers.findIndex(n => n % 2 !== 0) : idx;
+                }
+                else if (instruction.includes('наименьшее') || instruction.includes('меньшее')) {
+                    let min = Math.min(...btnNumbers);
+                    let idx = btnNumbers.indexOf(min);
+                    targetIndex = isNegative ? btnNumbers.findIndex(n => n !== min) : idx;
+                }
+                else if (instruction.includes('наибольшее') || instruction.includes('большее')) {
+                    let max = Math.max(...btnNumbers);
+                    let idx = btnNumbers.indexOf(max);
+                    targetIndex = isNegative ? btnNumbers.findIndex(n => n !== max) : idx;
+                }
+            }
+            else {
+                if (instruction.includes('буквой')) {
+                    let letterMatch = instruction.match(/буквой\s+([а-яА-ЯёЁa-zA-Z])/);
+                    if (letterMatch) {
+                        let letter = letterMatch[1].toLowerCase();
+                        let idx = btnTexts.findIndex(t => t.toLowerCase().includes(letter));
+                        targetIndex = isNegative ? btnTexts.findIndex(t => !t.toLowerCase().includes(letter)) : idx;
+                    }
+                }
+                else if (instruction.includes('короткое')) {
+                    let lengths = btnTexts.map(t => t.length);
+                    let minLen = Math.min(...lengths);
+                    let idx = lengths.indexOf(minLen);
+                    targetIndex = isNegative ? lengths.findIndex(l => l !== minLen) : idx;
+                }
+                else if (instruction.includes('длинное')) {
+                    let lengths = btnTexts.map(t => t.length);
+                    let maxLen = Math.max(...lengths);
+                    let idx = lengths.indexOf(maxLen);
+                    targetIndex = isNegative ? lengths.findIndex(l => l !== maxLen) : idx;
+                }
+            }
+        }
+
+        // --- БЕЗУСЛОВНАЯ ОЧИСТКА И ПОДСВЕТКА ---
+        buttons.forEach((btn, index) => {
+            const innerSpan = btn.querySelector('span');
+            const paintTarget = innerSpan || btn;
+
+            if (paintTarget.style.color && paintTarget.style.color !== 'rgb(57, 255, 20)') {
+                btn.dataset.origColor = paintTarget.style.color;
+            }
+
+            if (index === targetIndex) {
+                paintTarget.style.color = '#39ff14';
+                paintTarget.style.fontWeight = 'bold';
+            } else {
+                if (paintTarget.style.color === 'rgb(57, 255, 20)') {
+                    paintTarget.style.color = btn.dataset.origColor || '';
+                    paintTarget.style.fontWeight = '';
+                }
+            }
+        });
+    }
+
+    const observer = new MutationObserver(() => {
+        universalSolver();
+    });
+
+    observer.observe(document.body, {
+        childList: true,
+        subtree: true,
+        characterData: true
+    });
+})();

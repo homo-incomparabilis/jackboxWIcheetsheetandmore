@@ -1,24 +1,20 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+    <link rel="stylesheet" href="menu.css">
+    <script src="menu.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ЖМИ НА КНОПКУ — База данных</title>
     <style>
-        /* === ПАЛИТРА ЦВЕТОВ (Твой дизайн) === */
+        /* === ПАЛИТРА ЦВЕТОВ === */
         :root {
-            --bg: #0d0d12;
-            --row-bg: #1c1c24;
-            --tips-bg: #252530;
             --text: #ffffff;
-
             --accent: #E3E3E3;
             --ans-color: #00ffcc;       /* Человек / Верный ответ */
             --alien-color: #ff3366;     /* Пришелец / Ложь */
-
-            --input-bg: #1a1a1a;
-            --input-border: #333;
-            --table-border: #2a2a35;
+            --input-bg: rgba(0, 0, 0, 0.4);
+            --input-border: rgba(255, 255, 255, 0.1);
 
             /* Цвета отсеков из игры */
             --drawing: #00f2ff;
@@ -27,8 +23,27 @@
             --writing: #a29bfe;
         }
 
+        html { scrollbar-gutter: stable; overflow-y: scroll; }
         * { box-sizing: border-box; }
-        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 20px; }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: url('images\\push.avif') no-repeat center center fixed;
+            background-size: cover;
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        /* Виньетка для затемнения краев фона и улучшения контраста */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle, rgba(0,0,0,0.1) 0%, rgba(10,10,15,0.75) 100%);
+            z-index: -1;
+        }
 
         /* Шапка: Кнопка слева, Заголовок справа */
         .header {
@@ -48,63 +63,68 @@
             padding: 5px 15px;
             border-radius: 5px;
             transition: 0.3s;
+            background: rgba(0,0,0,0.2);
         }
         .back-btn:hover { background: var(--accent); color: #000; }
 
-        .search-wrapper, .tips, table {
+        /* === МАТОВОЕ СТЕКЛО (GLASSMORPHISM) === */
+        .glass-card {
             max-width: 800px;
             width: 100%;
-            margin-left: auto;
-            margin-right: auto;
+            margin: 0 auto 20px;
+            background: rgba(20, 20, 27, 0.65);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
         }
 
         .search-box { margin-bottom: 20px; }
-        .search-box label { font-size: 0.8rem; margin-left: 5px; display: block; margin-bottom: 5px; }
+        .search-box:last-child { margin-bottom: 0; }
+        .search-box label { font-size: 0.85rem; margin-left: 5px; display: block; margin-bottom: 8px; letter-spacing: 1px; }
+
         .search-box input {
             width: 100%;
             padding: 15px;
-            border-radius: 8px;
+            border-radius: 10px;
             border: 2px solid var(--input-border);
             background: var(--input-bg);
             color: white;
             font-size: 1.1rem;
             outline: none;
+            transition: 0.3s;
         }
 
         /* Акценты при фокусе */
-        #searchDrawing:focus { border-color: var(--drawing); }
-        #searchMorality:focus { border-color: var(--morality); }
-        #searchRating:focus { border-color: var(--rating); }
-        #searchWriting:focus { border-color: var(--writing); }
+        #searchDrawing:focus { border-color: var(--drawing); box-shadow: 0 0 15px rgba(0, 242, 255, 0.2); }
+        #searchMorality:focus { border-color: var(--morality); box-shadow: 0 0 15px rgba(255, 0, 255, 0.2); }
+        #searchRating:focus { border-color: var(--rating); box-shadow: 0 0 15px rgba(255, 179, 71, 0.2); }
+        #searchWriting:focus { border-color: var(--writing); box-shadow: 0 0 15px rgba(162, 155, 254, 0.2); }
 
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; display: none; }
-        th { text-align: left; color: var(--accent); padding: 10px; border-bottom: 2px solid var(--input-border); text-transform: uppercase; font-size: 0.8rem; }
-        td { padding: 15px 10px; border-bottom: 1px solid var(--table-border); background: var(--row-bg); vertical-align: top; }
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 12px 10px; border-bottom: 2px solid rgba(255,255,255,0.1); text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px; }
+        td { padding: 15px 10px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); background: transparent; vertical-align: top; }
+        tr:last-child td { border-bottom: none; }
 
-        /* Оформление карточки */
+        /* Оформление карточки внутри таблицы */
         .human-prompt { color: var(--text); font-weight: bold; font-size: 1.1rem; margin-bottom: 10px; }
-        .alien-list { border-top: 1px solid #333; padding-top: 10px; }
-        .alien-item { color: var(--ans-color); font-size: 0.95rem; margin-bottom: 5px; display: block; }
+        .alien-list { border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px; }
+        .alien-item { color: var(--ans-color); font-size: 0.95rem; margin-bottom: 5px; display: block; text-shadow: 0 0 8px rgba(0, 255, 204, 0.15); }
         .label { font-size: 0.65rem; opacity: 0.5; text-transform: uppercase; margin-right: 10px; font-weight: normal; color: #fff; }
 
         /* Блок советов с белой полосой */
-        .tips {
-            margin: 40px auto;
-            background: var(--tips-bg);
-            padding: 20px;
-            border-radius: 12px;
-            border-left: 4px solid #fff;
-        }
+        .tips { border-left: 4px solid #fff; }
+        .tips h3 { margin-top: 0; }
+        .tips ul { margin: 10px 0 0 0; padding-left: 20px; }
+        .tips li { margin-bottom: 8px; }
+        .tips li:last-child { margin-bottom: 0; }
     </style>
 </head>
 <body>
 
-<div class="header">
-    <a href="index.html" class="back-btn">← МЕНЮ</a>
-    <h2 style="color: var(--drawing); margin: 0; text-transform: uppercase;">ЖМИ НА КНОПКУ</h2>
-</div>
-
-<div class="search-wrapper">
+<div class="glass-card">
     <div class="search-box">
         <label style="color: var(--drawing);"><strong>ХУДОЖЕСТВЕННЫЙ ОТСЕК</strong></label>
         <input type="text" id="searchDrawing" placeholder="🔍 Что рисуют люди?">
@@ -123,12 +143,23 @@
     </div>
 </div>
 
-<table id="tableDrawing"><thead><tr><th>Художественный отсек</th></tr></thead><tbody id="bodyDrawing"></tbody></table>
-<table id="tableMorality"><thead><tr><th>Палуба дилемм</th></tr></thead><tbody id="bodyMorality"></tbody></table>
-<table id="tableRating"><thead><tr><th>Бар мнений</th></tr></thead><tbody id="bodyRating"></tbody></table>
-<table id="tableWriting"><thead><tr><th>Отдел анкетирования</th></tr></thead><tbody id="bodyWriting"></tbody></table>
+<div id="cardDrawing" class="glass-card" style="display: none;">
+    <table id="tableDrawing"><thead><tr><th style="color: var(--drawing);">Художественный отсек</th></tr></thead><tbody id="bodyDrawing"></tbody></table>
+</div>
 
-<div class="tips">
+<div id="cardMorality" class="glass-card" style="display: none;">
+    <table id="tableMorality"><thead><tr><th style="color: var(--morality);">Палуба дилемм</th></tr></thead><tbody id="bodyMorality"></tbody></table>
+</div>
+
+<div id="cardRating" class="glass-card" style="display: none;">
+    <table id="tableRating"><thead><tr><th style="color: var(--rating);">Бар мнений</th></tr></thead><tbody id="bodyRating"></tbody></table>
+</div>
+
+<div id="cardWriting" class="glass-card" style="display: none;">
+    <table id="tableWriting"><thead><tr><th style="color: var(--writing);">Отдел анкетрования</th></tr></thead><tbody id="bodyWriting"></tbody></table>
+</div>
+
+<div class="glass-card tips">
     <h3>💡 Подсказки для детектива-пришельца:</h3>
     <ul>
         <li><strong>Доверие:</strong> Убеди всех в своей невиновности.</li>
@@ -144,7 +175,6 @@
 
 <script>
     window.onload = function() {
-        // Функция перевода массива fields в удобный объект
         const flattenFields = (fields) => fields.reduce((acc, f) => ({ ...acc, [f.n]: f.v }), {});
 
         const renderPTB = (data, bodyId) => {
@@ -155,7 +185,6 @@
                 const f = flattenFields(raw.fields);
                 const humanText = f.HumanPromptText || f.QuestionText || '???';
 
-                // Собираем все AlienPromptTextN (от 0 до 8)
                 let alienListHtml = '';
                 for (let i = 0; i <= 8; i++) {
                     const alienText = f['AlienPromptText' + i];
@@ -176,29 +205,28 @@
             }).join('');
         };
 
-        // Загрузка данных
         renderPTB(window.DB_PTB_DRAWING, 'bodyDrawing');
         renderPTB(window.DB_PTB_MORALITY, 'bodyMorality');
         renderPTB(window.DB_PTB_RATING, 'bodyRating');
         renderPTB(window.DB_PTB_WRITING, 'bodyWriting');
 
-        const handleSearch = (input, table, tbody) => {
+        const handleSearch = (input, card, tbody) => {
             const filter = input.value.trim().toLowerCase();
             const rows = tbody.getElementsByTagName('tr');
-            if (filter === "") { table.style.display = "none"; return; }
+            if (filter === "") { card.style.display = "none"; return; }
             let hasResults = false;
             for (let row of rows) {
                 const match = row.textContent.toLowerCase().includes(filter);
                 row.style.display = match ? "" : "none";
                 if (match) hasResults = true;
             }
-            table.style.display = hasResults ? "table" : "none";
+            card.style.display = hasResults ? "block" : "none";
         };
 
-        document.getElementById('searchDrawing').oninput = function() { handleSearch(this, document.getElementById('tableDrawing'), document.getElementById('bodyDrawing')); };
-        document.getElementById('searchMorality').oninput = function() { handleSearch(this, document.getElementById('tableMorality'), document.getElementById('bodyMorality')); };
-        document.getElementById('searchRating').oninput = function() { handleSearch(this, document.getElementById('tableRating'), document.getElementById('bodyRating')); };
-        document.getElementById('searchWriting').oninput = function() { handleSearch(this, document.getElementById('tableWriting'), document.getElementById('bodyWriting')); };
+        document.getElementById('searchDrawing').oninput = function() { handleSearch(this, document.getElementById('cardDrawing'), document.getElementById('bodyDrawing')); };
+        document.getElementById('searchMorality').oninput = function() { handleSearch(this, document.getElementById('cardMorality'), document.getElementById('bodyMorality')); };
+        document.getElementById('searchRating').oninput = function() { handleSearch(this, document.getElementById('cardRating'), document.getElementById('bodyRating')); };
+        document.getElementById('searchWriting').oninput = function() { handleSearch(this, document.getElementById('cardWriting'), document.getElementById('bodyWriting')); };
     };
 </script>
 </body>

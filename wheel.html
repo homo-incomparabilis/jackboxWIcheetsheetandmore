@@ -1,15 +1,14 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+    <link rel="stylesheet" href="menu.css">
+    <script src="menu.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>КОЛЕСО НЕВЕРОЯТНЫХ МАСШТАБОВ — База данных</title>
     <style>
         /* === ПАЛИТРА ЦВЕТОВ КОЛЕСА === */
         :root {
-            --bg: #0d0d12;
-            --row-bg: #1c1c24;
-            --tips-bg: #211a2b;
             --text: #ffffff;
             --accent-list: #7BF1A8;      /* 01. Зеленый — Списки */
             --accent-numeric: #ffcc00;   /* 02. Золотой — Числа */
@@ -18,110 +17,164 @@
             --accent-clues: #ff8800;     /* 05. Оранжевый — Загадки */
             --accent-more-less: #DAB2FF; /* 06. Сиреневый — Сравнение */
             --ans-color: #39ff14;
-            --input-bg: #1a1a1a;
-            --input-border: #333;
-            --table-border: #2a2a35;
+            --input-bg: rgba(0, 0, 0, 0.4);
+            --input-border: rgba(255, 255, 255, 0.1);
         }
 
-        * { box-sizing: border-box; }
-        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 20px; }
+        html { scrollbar-gutter: stable; overflow-y: scroll; }
+        * { box-sizing: border-box; outline: none !important; }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: url('images\\wheel.avif') no-repeat center center fixed;
+            background-size: cover;
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        /* Виньетка для затемнения краев фона и улучшения контраста */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle, rgba(0,0,0,0.1) 0%, rgba(10,10,15,0.75) 100%);
+            z-index: -1;
+        }
 
         .header { max-width: 800px; margin: 0 auto 20px; display: flex; align-items: center; justify-content: space-between; }
-        .back-btn { text-decoration: none; color: var(--accent-list); font-weight: bold; font-size: 0.9rem; border: 1px solid var(--accent-list); padding: 5px 15px; border-radius: 5px; transition: 0.3s; }
+        .back-btn {
+            text-decoration: none; color: var(--accent-list); font-weight: bold; font-size: 0.9rem; border: 1px solid var(--accent-list); padding: 5px 15px; border-radius: 5px; transition: 0.3s; background: rgba(0,0,0,0.2);
+        }
         .back-btn:hover { background: var(--accent-list); color: #000; }
 
-        .search-wrapper, .tips, table { max-width: 800px; width: 100%; margin-left: auto; margin-right: auto; }
-        .search-box { margin-bottom: 20px; }
-
-        input {
-            width: 100%; padding: 15px; border-radius: 8px; border: 2px solid var(--input-border);
-            background: var(--input-bg); color: white; font-size: 1.1rem; outline: none; transition: 0.3s;
+        /* === МАТОВОЕ СТЕКЛО (GLASSMORPHISM) === */
+        .glass-card {
+            max-width: 800px;
+            width: 100%;
+            margin: 0 auto 20px;
+            background: rgba(20, 20, 27, 0.65);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+            position: relative;
         }
 
-        /* Фокусы для всех 6 поисков */
-        #searchList:focus { border-color: var(--accent-list); }
-        #searchNumeric:focus { border-color: var(--accent-numeric); }
-        #searchMatching:focus { border-color: var(--accent-matching); }
-        #searchCensus:focus { border-color: var(--accent-census); }
-        #searchClues:focus { border-color: var(--accent-clues); }
-        #searchMoreLess:focus { border-color: var(--accent-more-less); }
+        .search-box { margin-bottom: 20px; }
+        .search-box:last-child { margin-bottom: 0; }
+        .search-box label { font-size: 0.85rem; margin-left: 5px; display: block; margin-bottom: 8px; letter-spacing: 1px; }
 
-        table { border-collapse: collapse; margin-top: 20px; display: none; width: 100%; }
-        th { text-align: left; color: var(--accent-list); padding: 10px; border-bottom: 2px solid var(--input-border); text-transform: uppercase; font-size: 0.8rem; }
-        td { padding: 15px 10px; border-bottom: 1px solid var(--table-border); background: var(--row-bg); }
+        input {
+            width: 100%; padding: 15px; border-radius: 10px; border: 2px solid var(--input-border);
+            background: var(--input-bg); color: white; font-size: 1.1rem; transition: 0.3s;
+        }
 
-        .ans { color: var(--ans-color); font-weight: bold; font-size: 1.1rem; }
-        .unit-text { color: #888; font-size: 0.85rem; display: block; margin-top: 5px; }
+        /* Индивидуальные фокусы и свечения для полей Колеса */
+        #searchList:focus { border-color: var(--accent-list); box-shadow: 0 0 15px rgba(123, 241, 168, 0.2); }
+        #searchNumeric:focus { border-color: var(--accent-numeric); box-shadow: 0 0 15px rgba(255, 204, 0, 0.2); }
+        #searchMatching:focus { border-color: var(--accent-matching); box-shadow: 0 0 15px rgba(255, 51, 170, 0.2); }
+        #searchCensus:focus { border-color: var(--accent-census); box-shadow: 0 0 15px rgba(0, 170, 255, 0.2); }
+        #searchClues:focus { border-color: var(--accent-clues); box-shadow: 0 0 15px rgba(255, 136, 0, 0.2); }
+        #searchMoreLess:focus { border-color: var(--accent-more-less); box-shadow: 0 0 15px rgba(218, 178, 255, 0.2); }
+
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 12px 10px; border-bottom: 2px solid rgba(255,255,255,0.1); text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px; }
+        td { padding: 15px 10px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); background: transparent; vertical-align: top; }
+        tr:last-child td { border-bottom: none; }
+
+        .ans { color: var(--ans-color); font-weight: bold; font-size: 1.1rem; text-shadow: 0 0 8px rgba(57, 255, 20, 0.2); }
+        .unit-text { color: #aaa; font-size: 0.85rem; display: block; margin-top: 5px; font-style: italic; }
 
         /* Теги (Списки и Перепись) */
         .ans-tag {
-            display: inline-block; background: rgba(57, 255, 20, 0.1);
-            color: var(--ans-color); padding: 4px 10px; margin: 3px;
-            border-radius: 4px; font-weight: bold; border: 1px solid rgba(57, 255, 20, 0.3);
-            font-size: 0.9rem;
+            display: inline-block; background: rgba(57, 255, 20, 0.08);
+            color: var(--ans-color); padding: 5px 12px; margin: 3px;
+            border-radius: 6px; font-weight: bold; border: 1px solid rgba(57, 255, 20, 0.2);
+            font-size: 0.95rem; text-shadow: 0 0 5px rgba(57, 255, 20, 0.1);
         }
-        .alt-text { color: #888; font-size: 0.75rem; font-weight: normal; margin-left: 4px; }
+        .alt-text { color: #aaa; font-size: 0.75rem; font-weight: normal; margin-left: 5px; }
 
         /* Пары (Сопоставление и Сравнение) */
-        .match-pair { display: flex; justify-content: space-between; border-bottom: 1px solid #333; padding: 5px 0; }
+        .match-pair { display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 6px 0; }
         .match-pair:last-child { border: none; }
         .match-val { color: var(--ans-color); font-weight: bold; }
 
-        .clue-item { font-size: 0.9rem; color: #bbb; margin-bottom: 5px; padding-left: 15px; position: relative; }
-        .clue-item::before { content: "•"; position: absolute; left: 0; color: var(--accent-clues); }
+        .clue-item { font-size: 0.95rem; color: #ddd; margin-bottom: 6px; padding-left: 15px; position: relative; }
+        .clue-item::before { content: "•"; position: absolute; left: 0; color: var(--accent-clues); font-weight: bold; }
 
-        .category-label { font-size: 0.7rem; color: #888; text-transform: uppercase; display: block; margin-bottom: 5px; }
-        .tips { margin: 40px auto; background: var(--tips-bg); padding: 20px; border-radius: 12px; border-left: 4px solid var(--accent-list); }
+        .category-label { font-size: 0.7rem; color: #aaa; text-transform: uppercase; display: block; margin-bottom: 5px; letter-spacing: 0.5px; }
+
+        .tips { border-left: 4px solid var(--accent-list); }
+        .tips h3 { margin-top: 0; }
+        .tips ul { margin: 10px 0 0 0; padding-left: 20px; }
+        .tips li { margin-bottom: 8px; }
+        .tips li:last-child { margin-bottom: 0; }
         i { font-style: italic; color: inherit; }
     </style>
 </head>
 <body>
 
-<div class="header">
-    <a href="index.html" class="back-btn">← МЕНЮ</a>
-    <h2 style="color: var(--accent-list); margin: 0;">КОЛЕСО</h2>
-</div>
-
-<div class="search-wrapper">
+<div class="glass-card">
     <div class="search-box">
-        <label style="color: var(--accent-list); font-size: 0.8rem; margin-left: 5px;"><strong>ОБЫЧНЫЕ ВОПРОСЫ</strong></label>
+        <label style="color: var(--accent-list);"><strong>ОБЫЧНЫЕ ВОПРОСЫ</strong></label>
         <input type="text" id="searchList" placeholder="🔍 Введите вопрос ...">
     </div>
 
     <div class="search-box">
-        <label style="color: var(--accent-numeric); font-size: 0.8rem; margin-left: 5px;"><strong>НЕ ПРОСЧИТАЙТЕСЬ</strong></label>
+        <label style="color: var(--accent-numeric);"><strong>НЕ ПРОСЧИТАЙТЕСЬ</strong></label>
         <input type="text" id="searchNumeric" placeholder="🔍 Введите вопрос ...">
     </div>
 
     <div class="search-box">
-        <label style="color: var(--accent-matching); font-size: 0.8rem; margin-left: 5px;"><strong>СОПОСТАВЛЕНИЯ</strong></label>
+        <label style="color: var(--accent-matching);"><strong>СОПОСТАВЛЕНИЯ</strong></label>
         <input type="text" id="searchMatching" placeholder="🔍 Введите тему ...">
     </div>
 
     <div class="search-box">
-        <label style="color: var(--accent-census); font-size: 0.8rem; margin-left: 5px;"><strong>ПЕРЕПИСЬ ОТВЕТОВ</strong></label>
+        <label style="color: var(--accent-census);"><strong>ПЕРЕПИСЬ ОТВЕТОВ</strong></label>
         <input type="text" id="searchCensus" placeholder="🔍 Введите тему ...">
     </div>
 
     <div class="search-box">
-        <label style="color: var(--accent-clues); font-size: 0.8rem; margin-left: 5px;"><strong>О ЧЁМ ДУМАЕТ КОЛЕСО?</strong></label>
+        <label style="color: var(--accent-clues);"><strong>О ЧЁМ ДУМАЕТ КОЛЕСО?</strong></label>
         <input type="text" id="searchClues" placeholder="🔍 Введите подсказку ...">
     </div>
 
     <div class="search-box">
-        <label style="color: var(--accent-more-less); font-size: 0.8rem; margin-left: 5px;"><strong>ЛИБО ТО, ЛИБО ЭТО</strong></label>
+        <label style="color: var(--accent-more-less);"><strong>ЛИБО ТО, ЛИБО ЭТО</strong></label>
         <input type="text" id="searchMoreLess" placeholder="🔍 Введите тему ...">
     </div>
 </div>
 
-<table id="listTable"><thead><tr><th>Вопрос</th><th>Верные варианты</th></tr></thead><tbody id="listBody"></tbody></table>
-<table id="numericTable"><thead><tr><th>Вопрос</th><th>Ответ</th></tr></thead><tbody id="numericBody"></tbody></table>
-<table id="matchingTable"><thead><tr><th>Вопрос</th><th>Правильные пары</th></tr></thead><tbody id="matchingBody"></tbody></table>
-<table id="censusTable"><thead><tr><th>Тема</th><th>Все ответы</th></tr></thead><tbody id="censusBody"></tbody></table>
-<table id="cluesTable"><thead><tr><th>Загадка</th><th>Подсказки</th><th>Ответ</th></tr></thead><tbody id="cluesBody"></tbody></table>
-<table id="moreLessTable"><thead><tr><th>Вопрос</th><th>Рейтинг</th></tr></thead><tbody id="moreLessBody"></tbody></table>
+<div id="listCard" class="glass-card" style="display: none;">
+    <table id="listTable"><thead><tr><th style="color: var(--accent-list);">Вопрос</th><th>Верные варианты</th></tr></thead><tbody id="listBody"></tbody></table>
+</div>
 
-<div class="tips">
+<div id="numericCard" class="glass-card" style="display: none;">
+    <table id="numericTable"><thead><tr><th style="color: var(--accent-numeric);">Вопрос</th><th>Ответ</th></tr></thead><tbody id="numericBody"></tbody></table>
+</div>
+
+<div id="matchingCard" class="glass-card" style="display: none;">
+    <table id="matchingTable"><thead><tr><th style="color: var(--accent-matching);">Вопрос</th><th>Правильные пары</th></tr></thead><tbody id="matchingBody"></tbody></table>
+</div>
+
+<div id="censusCard" class="glass-card" style="display: none;">
+    <table id="censusTable"><thead><tr><th style="color: var(--accent-census);">Тема</th><th>Все ответы</th></tr></thead><tbody id="censusBody"></tbody></table>
+</div>
+
+<div id="cluesCard" class="glass-card" style="display: none;">
+    <table id="cluesTable"><thead><tr><th style="color: var(--accent-clues);">Загадка</th><th>Подсказки</th><th>Ответ</th></tr></thead><tbody id="cluesBody"></tbody></table>
+</div>
+
+<div id="moreLessCard" class="glass-card" style="display: none;">
+    <table id="moreLessTable"><thead><tr><th style="color: var(--accent-more-less);">Вопрос</th><th>Рейтинг</th></tr></thead><tbody id="moreLessBody"></tbody></table>
+</div>
+
+<div class="glass-card tips">
     <h3>💡 Советы Мудрого Колеса:</h3>
     <ul>
         <li><strong>Общее:</strong> Не спорь с Колесом. Оно больше тебя. Буквально.</li>
@@ -206,29 +259,29 @@
             }).join('');
         }
 
-        const setupSearch = (inputId, tableId, bodyId) => {
+        const setupSearch = (inputId, cardId, bodyId) => {
             const input = document.getElementById(inputId);
-            const table = document.getElementById(tableId);
+            const card = document.getElementById(cardId);
             const rows = document.getElementById(bodyId).getElementsByTagName('tr');
             input.addEventListener('input', () => {
                 const filter = input.value.trim().toLowerCase();
-                if (filter === "") { table.style.display = "none"; return; }
+                if (filter === "") { card.style.display = "none"; return; }
                 let found = false;
                 for (let row of rows) {
                     const match = row.textContent.toLowerCase().includes(filter);
                     row.style.display = match ? "" : "none";
                     if (match) found = true;
                 }
-                table.style.display = found ? "table" : "none";
+                card.style.display = found ? "block" : "none";
             });
         };
 
-        setupSearch('searchList', 'listTable', 'listBody');
-        setupSearch('searchNumeric', 'numericTable', 'numericBody');
-        setupSearch('searchMatching', 'matchingTable', 'matchingBody');
-        setupSearch('searchCensus', 'censusTable', 'censusBody');
-        setupSearch('searchClues', 'cluesTable', 'cluesBody');
-        setupSearch('searchMoreLess', 'moreLessTable', 'moreLessBody');
+        setupSearch('searchList', 'listCard', 'listBody');
+        setupSearch('searchNumeric', 'numericCard', 'numericBody');
+        setupSearch('searchMatching', 'matchingCard', 'matchingBody');
+        setupSearch('searchCensus', 'censusCard', 'censusBody');
+        setupSearch('searchClues', 'cluesCard', 'cluesBody');
+        setupSearch('searchMoreLess', 'moreLessCard', 'moreLessBody');
     };
 </script>
 </body>

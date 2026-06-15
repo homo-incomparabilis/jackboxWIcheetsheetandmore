@@ -1,81 +1,100 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+    <link rel="stylesheet" href="menu.css">
+    <script src="menu.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>БРЕДОВУХА 3 — База данных</title>
+    <title>ВРЕДОВУХА 3 — База данных</title>
     <style>
+        /* === ПАЛИТРА ЦВЕТОВ === */
         :root {
-            --bg: #0d0d12;
-            --row-bg: #1c1c24;
-            --tips-bg: #252530;
             --text: #ffffff;
             --accent: #FDA5D5;
             --accent-final: #7BF1A8;
-            --ans-color: #00ffcc;
+            --ans-color: #7BF1A8;
             --lie-color: #ff3366;
-            --input-bg: #1a1a1a;
-            --input-border: #333;
+            --input-bg: rgba(0, 0, 0, 0.4);
+            --input-border: rgba(255, 255, 255, 0.1);
         }
 
+        html { scrollbar-gutter: stable; overflow-y: scroll; }
         * { box-sizing: border-box; }
-        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 20px; }
+        body { font-family: 'Segoe UI', sans-serif; background: url('images\\fib3.avif') no-repeat center center fixed; background-size: cover; color: var(--text); margin: 0; padding: 20px; min-height: 100vh; }
+
+        /* Виньетка для затемнения краев фона и улучшения контраста */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle, rgba(0,0,0,0.1) 0%, rgba(10,10,15,0.75) 100%);
+            z-index: -1;
+        }
 
         .header { max-width: 800px; margin: 0 auto 20px; display: flex; align-items: center; justify-content: space-between; }
-        .back-btn { text-decoration: none; color: var(--accent); font-weight: bold; font-size: 0.9rem; border: 1px solid var(--accent); padding: 5px 15px; border-radius: 5px; transition: 0.3s; }
+        .back-btn {
+            text-decoration: none; color: var(--accent); font-weight: bold; font-size: 0.9rem; border: 1px solid var(--accent); padding: 5px 15px; border-radius: 5px; transition: 0.3s; background: rgba(0,0,0,0.2);
+        }
         .back-btn:hover { background: var(--accent); color: #000; }
 
-        .search-wrapper, .tips, table { max-width: 800px; width: 100%; margin: 0 auto; }
-        .search-box { margin-bottom: 20px; }
-        .search-box input {
-            width: 100%; padding: 15px; border-radius: 8px; border: 2px solid var(--input-border);
-            background: var(--input-bg); color: white; font-size: 1.1rem; outline: none; transition: 0.3s;
+        /* === МАТОВОЕ СТЕКЛО (GLASSMORPHISM) === */
+        .glass-card {
+            max-width: 800px; width: 100%; margin: 0 auto 20px; background: rgba(20, 20, 27, 0.65); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 16px; padding: 25px; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
         }
 
-        #searchInput:focus { border-color: var(--accent); }
-        #searchFinal:focus { border-color: var(--accent-final); }
+        .search-box { margin-bottom: 20px; }
+        .search-box:last-child { margin-bottom: 0; }
+        .search-box input {
+            width: 100%; padding: 15px; border-radius: 10px; border: 2px solid var(--input-border); background: var(--input-bg); color: white; font-size: 1.1rem; outline: none; transition: 0.3s;
+        }
+        #searchInput:focus { border-color: var(--accent); box-shadow: 0 0 15px rgba(253, 165, 211, 0.2); }
+        #searchFinal:focus { border-color: var(--accent-final); box-shadow: 0 0 15px rgba(123, 241, 168, 0.2); }
 
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; display: none; }
-        th { text-align: left; color: var(--accent); padding: 10px; border-bottom: 2px solid var(--input-border); text-transform: uppercase; font-size: 0.8rem; }
-        td { padding: 15px 10px; border-bottom: 1px solid #2a2a35; background: var(--row-bg); vertical-align: top; }
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; color: var(--accent); padding: 12px 10px; border-bottom: 2px solid rgba(255,255,255,0.1); text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px; }
+        td { padding: 15px 10px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); background: transparent; vertical-align: top; }
+        tr:last-child td { border-bottom: none; }
 
-        .ans { color: var(--ans-color); font-weight: bold; font-size: 1.1rem; }
-        .lie-text { color: var(--lie-color); font-size: 0.8rem; margin-top: 8px; line-height: 1.4; display: block; border-top: 1px solid #333; padding-top: 5px; }
-        .cat-tag { font-size: 0.7rem; color: #666; text-transform: uppercase; display: block; margin-bottom: 4px; }
+        .ans { color: var(--ans-color); font-weight: bold; font-size: 1.1rem; text-shadow: 0 0 8px rgba(0, 255, 204, 0.2); }
+        .lie-text { color: var(--lie-color); font-size: 0.8rem; margin-top: 8px; line-height: 1.4; display: block; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 5px; }
+        .cat-tag { font-size: 0.7rem; color: #888; text-transform: uppercase; display: block; margin-bottom: 4px; }
         .blank { color: var(--accent); text-decoration: underline; font-weight: bold; }
 
-        .tips { margin: 40px auto; background: var(--tips-bg); padding: 20px; border-radius: 12px; border-left: 4px solid var(--accent); }
+        .tips { border-left: 4px solid var(--accent); }
+        .tips h3 { margin-top: 0; }
+        .tips ul { margin: 10px 0 0 0; padding-left: 20px; }
+        .tips li { margin-bottom: 8px; }
+        .tips li:last-child { margin-bottom: 0; }
     </style>
 </head>
 <body>
 
-<div class="header">
-    <a href="index.html" class="back-btn">← МЕНЮ</a>
-    <h2 style="color: var(--accent); margin: 0;">БРЕДОВУХА 3</h2>
-</div>
-
-<div class="search-wrapper">
+<div class="glass-card">
     <div class="search-box">
-        <label style="color: var(--accent); font-size: 0.8rem; margin-left: 5px;"><strong>ОБЫЧНЫЕ ВОПРОСЫ</strong></label>
+        <label style="color: var(--accent); font-size: 0.85rem; margin-left: 5px; display: block; margin-bottom: 8px; letter-spacing: 1px;"><strong>ОБЫЧНЫЕ ВОПРОСЫ</strong></label>
         <input type="text" id="searchInput" placeholder="🔍 Введите вопрос или ответ...">
     </div>
     <div class="search-box">
-        <label style="color: var(--accent-final); font-size: 0.8rem; margin-left: 5px;"><strong>ФИНАЛЬНЫЙ РАУНД</strong></label>
+        <label style="color: var(--accent-final); font-size: 0.85rem; margin-left: 5px; display: block; margin-bottom: 8px; letter-spacing: 1px;"><strong>ФИНАЛЬНЫЙ РАУНД</strong></label>
         <input type="text" id="searchFinal" placeholder="💀 Текст из финала Бредовухи 3...">
     </div>
 </div>
 
-<table id="qaTable">
-    <thead><tr><th style="width: 65%; color:var(--ans-color)">ВОПРОС</th><th><span style="color:var(--ans-color)">ПРАВДА</span> / <span style="color:var(--lie-color)">ЛОЖЬ</span></th></tr></thead>
-    <tbody id="tableBody"></tbody>
-</table>
+<div id="qaCard" class="glass-card" style="display: none;">
+    <table id="qaTable">
+        <thead><tr><th style="width: 65%; color:var(--ans-color)">ВОПРОС</th><th><span style="color:var(--ans-color)">ПРАВДА</span> / <span style="color:var(--lie-color)">ЛОЖЬ</span></th></tr></thead>
+        <tbody id="tableBody"></tbody>
+    </table>
+</div>
 
-<table id="finalTable">
-    <thead><tr><th style="width: 65%; color:var(--ans-color)">ФИНАЛЬНЫЙ ВОПРОС</th><th>ОТВЕТ</th></tr></thead>
-    <tbody id="finalBody"></tbody>
-</table>
+<div id="finalCard" class="glass-card" style="display: none;">
+    <table id="finalTable">
+        <thead><tr><th style="width: 65%; color:var(--ans-color)">ФИНАЛЬНЫЙ ВОПРОС</th><th>ОТВЕТ</th></tr></thead>
+        <tbody id="finalBody"></tbody>
+    </table>
+</div>
 
-<div class="tips">
+<div class="glass-card tips">
     <h3>💡 Подсказки:</h3>
     <ul>
         <li><strong>Мораль:</strong> Та самая игра, в которой можно наврать друзьям, и при этом не остаться без друзей (обычно).</li>
@@ -89,20 +108,18 @@
 
 <script>
     const parseJack = (text) => {
-    if (!text) return '—';
-    return text.toString()
-        .replace(/\[i\]/g, '<i>').replace(/\[\/i\]/g, '</i>') // Итальянизируем курсив
-        .replace(/{{BLANK}}|<Blank>|\[Blank\]/gi, '<span class="blank"><span style="color:var(--text)">_______</span></span>'); // Рисуем дыры в вопросах
-};
+        if (!text) return '—';
+        return text.toString()
+            .replace(/\[i\]/g, '<i>').replace(/\[\/i\]/g, '</i>')
+            .replace(/{{BLANK}}|<Blank>|\[Blank\]/gi, '<span class="blank"><span style="color:var(--text)">_______</span></span>');
+    };
 
-    // Функция, которая достает данные даже из самого кривого JSON
     const getJackData = (item) => {
         let q = item.questionText || "";
         let a = item.correctText || "";
         let s = item.suggestions || [];
         let c = item.category || "";
 
-        // Если данные лежат в массиве "fields" (специфика RU-модов)
         if (item.fields) {
             item.fields.forEach(f => {
                 if (f.n === "QuestionText") q = f.v;
@@ -135,12 +152,12 @@
         render(window.DB_FIBBAGE3_BASE, 'tableBody');
         render(window.DB_FIBBAGE3_FINAL, 'finalBody');
 
-        const handleSearch = (input, tableId, bodyId) => {
+        const handleSearch = (input, cardId, bodyId) => {
             const filter = input.value.trim().toLowerCase();
-            const table = document.getElementById(tableId);
+            const card = document.getElementById(cardId);
             const rows = document.getElementById(bodyId).getElementsByTagName('tr');
 
-            if (filter === "") { table.style.display = "none"; return; }
+            if (filter === "") { card.style.display = "none"; return; }
 
             let found = false;
             for (let row of rows) {
@@ -148,11 +165,11 @@
                     row.style.display = ""; found = true;
                 } else { row.style.display = "none"; }
             }
-            table.style.display = found ? "table" : "none";
+            card.style.display = found ? "block" : "none";
         };
 
-        document.getElementById('searchInput').oninput = function() { handleSearch(this, 'qaTable', 'tableBody'); };
-        document.getElementById('searchFinal').oninput = function() { handleSearch(this, 'finalTable', 'finalBody'); };
+        document.getElementById('searchInput').oninput = function() { handleSearch(this, 'qaCard', 'tableBody'); };
+        document.getElementById('searchFinal').oninput = function() { handleSearch(this, 'finalCard', 'finalBody'); };
     };
 </script>
 </body>

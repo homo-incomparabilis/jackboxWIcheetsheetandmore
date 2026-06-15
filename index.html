@@ -3,194 +3,288 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jackbox Hub | What If Edition</title>
+    <title>Jackbox Hub | Приветствие</title>
+
+    <link rel="stylesheet" href="menu.css">
+
     <style>
-        :root {
-            --bg: #0d0d12;
-            --card-bg: #1c1c24;
-            --accent: #ffcc00;
-            --text: #ffffff;
-        }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100vh; overflow: hidden; font-family: 'Segoe UI', sans-serif; }
+        body { background: url('images/index.avif') no-repeat center center fixed; background-size: cover; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #fff; }
+        body::before { content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.6); z-index: -1; }
 
-        body {
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            margin: 0;
-            padding: 40px 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+        h1 { font-size: 3rem; letter-spacing: 15px; text-transform: uppercase; margin-bottom: 20px; }
+        p { font-size: 1.2rem; margin-bottom: 40px; color: #aaa; }
 
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 40px;
-            color: var(--accent);
-            text-transform: uppercase;
-            letter-spacing: 5px;
-        }
+        .start-btn { padding: 15px 40px; background: transparent; border: 2px solid #5294e2; color: #5294e2; font-size: 1rem; text-transform: uppercase; letter-spacing: 3px; cursor: pointer; transition: 0.3s; text-decoration: none; border-radius: 5px; margin: 10px; }
+        .start-btn:hover { background: #5294e2; color: #fff; box-shadow: 0 0 20px #5294e2; }
 
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-            gap: 20px;
-            width: 100%;
-            max-width: 1200px;
+        /* Стеклянное окошко с прозрачностью */
+        .script-panel {
+            display: none;
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 600px;
+            background: rgba(20, 20, 27, 0.6); /* Прозрачность 0.6 */
+            backdrop-filter: blur(25px); /* Более сильное размытие */
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            z-index: 1000;
         }
-
-        .card {
-            background: var(--card-bg);
-            border-radius: 12px;
-            text-decoration: none;
-            color: white;
-            transition: 0.3s;
-            border: 1px solid rgba(255,255,255,0.05);
-            overflow: hidden; /* Чтобы картинка не вылезала за края */
-            display: flex;
-            flex-direction: column;
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-            border-color: var(--accent);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
-        }
-
-        /* Окошко для картинки */
-        .image-placeholder {
-            width: 100%;
-            height: 140px;
-            background: #2a2a35;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
-
-        .image-placeholder img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover; /* Картинка заполнит всё пространство */
-        }
-
-        /* Инфо-блок под картинкой */
-        .card-info {
-            padding: 15px;
-            text-align: center;
-        }
-
-        .tag {
-            font-size: 0.7rem;
-            color: var(--accent);
-            text-transform: uppercase;
-            font-weight: bold;
-            display: block;
-            margin-bottom: 5px;
-            opacity: 0.8;
-        }
-
-        .card h2 {
-            margin: 0;
-            font-size: 1.1rem;
-            font-weight: 600;
-        }
-
-        @media (max-width: 600px) {
-            .grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-            .image-placeholder { height: 100px; }
-            h1 { font-size: 1.5rem; }
-        }
+        .script-panel textarea { width: 100%; height: 150px; background: rgba(0,0,0,0.2); color: #fff; font-family: monospace; border: 1px solid rgba(255,255,255,0.1); padding: 15px; border-radius: 10px; margin-bottom: 15px; resize: none; box-sizing: border-box; }
     </style>
+    <script src="menu.js"></script>
 </head>
 <body>
 
-    <h1>JACKBOX CHEETSHEET</h1>
+    <h1>JACKBOX CHEATSHEET</h1>
+    <p>Скрипт для подсветки всяких полезностей</p>
 
-    <div class="grid">
-        <a href="tmp1.html" class="card">
-            <div class="image-placeholder">
-                <img src="images/tmp.jpg">
-            </div>
-            <div class="card-info">
-                <span class="tag">Pack 3</span>
-                <h2>Смертельная вечеринка</h2>
-            </div>
-        </a>
-
-        <a href="tmp2.html" class="card">
-            <div class="image-placeholder"><img src="images/tmp2.jpg"></div>
-            <div class="card-info">
-                <span class="tag">Pack 6</span>
-                <h2>Смертельная вечеринка 2</h2>
-            </div>
-        </a>
-
-        <a href="tmp2CE.html" class="card">
-            <div class="image-placeholder"><img src="images/CE.png"></div>
-            <div class="card-info">
-                <span class="tag">Pack 6</span>
-                <h2>Смертельная вечеринка 2 CE</h2>
-            </div>
-        </a>
-
-        <a href="guess.html" class="card">
-            <div class="image-placeholder"><img src="images/nashshpionaj.jpg"></div>
-            <div class="card-info">
-                <span class="tag">Pack 3</span>
-                <h2>Нашшпионаж</h2>
-            </div>
-        </a>
-
-        <a href="wheel.html" class="card">
-            <div class="image-placeholder"><img src="images/wheel.jpg"></div>
-            <div class="card-info">
-                <span class="tag">Pack 8</span>
-                <h2>Колесо невероятных масштабов</h2>
-            </div>
-        </a>
-
-        <a href="fibbage3.html" class="card">
-            <div class="image-placeholder"><img src="images/fibbage3.jpg"></div>
-            <div class="card-info">
-                <span class="tag">Pack 4</span>
-                <h2>Бредовуха 3</h2>
-            </div>
-        </a>
-
-        <a href="fibbage4.html" class="card">
-            <div class="image-placeholder"><img src="images/fibbage4.jpg"></div>
-            <div class="card-info">
-                <span class="tag">Pack 9</span>
-                <h2>Бредовуха 4</h2>
-            </div>
-        </a>
-
-        <a href="quixort.html" class="card">
-            <div class="image-placeholder"><img src="images/skorosort.png"></div>
-            <div class="card-info">
-                <span class="tag">Pack 9</span>
-                <h2>Сортировка</h2>
-            </div>
-        </a>
-
-        <a href="ydkj5.html" class="card">
-            <div class="image-placeholder"><img src="images/YDNJFS.png"></div>
-            <div class="card-info">
-                <span class="tag">Pack 5</span>
-                <h2>А голову ты не забыл? Full Stream</h2>
-            </div>
-        </a>
-
-        <a href="push.html" class="card">
-            <div class="image-placeholder"><img src="images/press.jpg"></div>
-            <div class="card-info">
-                <span class="tag">Pack 6</span>
-                <h2>Жми на кнопку</h2>
-            </div>
-        </a>
-
+    <div style="display: flex; gap: 10px;">
+        <button class="start-btn" id="scriptBtn">СКРИПТ</button>
     </div>
 
+    <div class="script-panel" id="codeModal">
+        <h3 style="margin-top: 0; color: #fff; letter-spacing: 2px;">Скрипт для TamperMonkey</h3>
+        <textarea id="codeArea" readonly></textarea>
+        <div style="display: flex; gap: 10px;">
+            <button class="start-btn" id="copyBtn" style="margin: 0; padding: 10px 20px; font-size: 0.8rem;">СКОПИРОВАТЬ</button>
+            <button class="start-btn" onclick="document.getElementById('codeModal').style.display='none'" style="margin: 0; padding: 10px 20px; font-size: 0.8rem; border-color: #ff5555; color: #ff5555;">ЗАКРЫТЬ</button>
+        </div>
+    </div>
+
+    <script>
+        const code = `// ==UserScript==
+// @name         Jackbox Room Smasher
+// @namespace    http://tampermonkey.net/
+// @version      1.0
+// @description  Подсвечивает правильные ответы в математике и правилах (TMP, TMP2, TMP3), а так же выводит список букв в игре слова (TMP)
+// @match        *://*.jackbox.fun/*
+// @match        *://*.jackbox.tv/*
+// @grant        none
+// ==/UserScript==
+
+(function() {
+    'use strict';
+
+    let gridObserved = false;
+
+    function solveExpression(text) {
+        try {
+            let clean = text.replace(/[xX]/g, '*').replace(/÷/g, '/').replace(/[^0-9+\-*/().\s]/g, '');
+            if (!clean) return null;
+            /* eslint-disable-next-line no-eval */
+            return eval(clean);
+        } catch(e) {
+            return null;
+        }
+    }
+
+    function universalSolver() {
+        if (!gridObserved) {
+            const gridWrapper = document.querySelector('#state-grid');
+            if (gridWrapper) {
+                const gridObserver = new MutationObserver(() => universalSolver());
+                gridObserver.observe(gridWrapper, { attributes: true, attributeFilter: ['class', 'style'] });
+                gridObserved = true;
+            }
+        }
+
+        // --- ЭТАП 0: СБОР СТРОКИ ДЛЯ ИГРЫ В СЛОВА (GRID) ---
+        const gridWrapper = document.querySelector('#state-grid');
+        const isGridActive = gridWrapper && !gridWrapper.classList.contains('pt-page-off') && gridWrapper.style.display !== 'none';
+
+        const gridCells = isGridActive ? Array.from(gridWrapper.querySelectorAll('.jbg-grid-text')) : [];
+        const gridString = gridCells.map(cell => cell.innerText.replace(/[\s\u200c\u200b]/g, '')).join('');
+
+        if (gridCells.length === 25 && /[а-яА-ЯёЁa-zA-Z]/.test(gridString)) {
+            let container = document.getElementById('extracted-grid-string');
+
+            if (!container) {
+                container = document.createElement('div');
+                container.id = 'extracted-grid-string';
+                container.style.background = '#111';
+                container.style.color = '#39ff14';
+                container.style.padding = '8px';
+                container.style.fontWeight = 'bold';
+                container.style.fontSize = '1.4rem';
+                container.style.letterSpacing = '3px';
+                container.style.textAlign = 'center';
+                container.style.border = '2px dashed #39ff14';
+                container.style.borderRadius = '5px';
+                container.style.width = '90%';
+                container.style.cursor = 'pointer';
+                container.title = 'Кликни, чтобы скопировать';
+
+                container.style.position = 'fixed';
+                container.style.bottom = '10px';
+                container.style.left = '5%';
+                container.style.zIndex = '99999';
+                container.style.margin = '0';
+
+                container.addEventListener('click', () => {
+                    navigator.clipboard.writeText(container.innerText).then(() => {
+                        const oldBg = container.style.background;
+                        container.style.background = '#39ff14';
+                        container.style.color = '#000';
+                        setTimeout(() => {
+                            container.style.background = oldBg;
+                            container.style.color = '#39ff14';
+                        }, 200);
+                    });
+                });
+                document.body.appendChild(container);
+            }
+            if (container.innerText !== gridString) {
+                container.innerText = gridString;
+                navigator.clipboard.writeText(gridString).catch(() => {});
+            }
+        } else {
+            let container = document.getElementById('extracted-grid-string');
+            if (container) container.remove();
+        }
+
+        // --- ЭТАП 1: ПОДГОТОВКА СЕЛЕКТОРОВ ДЛЯ ДРУГИХ ИГР ---
+        const promptEl = document.querySelector('.message.prompt, #prompt .text, .prompt .text, #make-single-choice-text, .instructions');
+        const buttons = document.querySelectorAll('button.action.choice, button.choice-button, #make-single-choice-choices button, .button-choice, button.choice');
+
+        if (!promptEl || buttons.length === 0) return;
+
+        let instruction = promptEl.innerText.trim();
+        const ariaHiddenEl = promptEl.querySelector('[aria-hidden="true"]');
+        if (ariaHiddenEl) {
+            instruction = ariaHiddenEl.textContent.trim();
+        } else {
+            const clone = promptEl.cloneNode(true);
+            clone.querySelectorAll('.textDescriptions').forEach(el => el.remove());
+            instruction = clone.textContent.trim();
+        }
+
+        let targetIndex = -1;
+        const btnTexts = Array.from(buttons).map(b => b.innerText.trim());
+        const btnNumbers = btnTexts.map(t => parseFloat(t));
+        const isNumeric = btnNumbers.every(n => !isNaN(n));
+        const isNegative = instruction.startsWith('Не');
+
+        // --- ПРОВЕРКА НА ЧИСТУЮ МАТЕМАТИКУ ---
+        const mathInstruction = instruction.replace(/[xX]/g, '*');
+
+        // Проверяем: есть ли цифры и знаки, и нет ли обычных букв (кроме уже замененных X)
+        if (/[0-9+\-*/×÷]/.test(mathInstruction) && !/[а-яА-Яa-zA-Z]/.test(mathInstruction.replace(/\*/g, ''))) {
+            const correctAnswer = solveExpression(instruction);
+            if (correctAnswer !== null) {
+                targetIndex = btnNumbers.indexOf(correctAnswer);
+            }
+        }
+        // --- РЕЖИМ "ПРАВИЛА" ---
+        else {
+            if (instruction.includes('кнопку') || instruction.includes('кнопка')) {
+                let numWord = instruction.match(/(первую|вторую|третью|четвертую|четвёртую)/);
+                if (numWord) {
+                    let idx = -1;
+                    if (numWord[0] === 'первую') idx = 0;
+                    if (numWord[0] === 'вторую') idx = 1;
+                    if (numWord[0] === 'третью') idx = 2;
+                    if (numWord[0] === 'четвертую' || numWord[0] === 'четвёртую') idx = 3;
+
+                    if (isNegative) {
+                        targetIndex = (idx === 0) ? 1 : 0;
+                    } else {
+                        targetIndex = idx;
+                    }
+                }
+            }
+            else if (isNumeric) {
+                if (instruction.includes('нечетное') || instruction.includes('нечётное')) {
+                    let idx = btnNumbers.findIndex(n => n % 2 !== 0);
+                    targetIndex = isNegative ? btnNumbers.findIndex(n => n % 2 === 0) : idx;
+                }
+                else if (instruction.includes('четное') || instruction.includes('чётное')) {
+                    let idx = btnNumbers.findIndex(n => n % 2 === 0);
+                    targetIndex = isNegative ? btnNumbers.findIndex(n => n % 2 !== 0) : idx;
+                }
+                else if (instruction.includes('наименьшее') || instruction.includes('меньшее')) {
+                    let min = Math.min(...btnNumbers);
+                    let idx = btnNumbers.indexOf(min);
+                    targetIndex = isNegative ? btnNumbers.findIndex(n => n !== min) : idx;
+                }
+                else if (instruction.includes('наибольшее') || instruction.includes('большее')) {
+                    let max = Math.max(...btnNumbers);
+                    let idx = btnNumbers.indexOf(max);
+                    targetIndex = isNegative ? btnNumbers.findIndex(n => n !== max) : idx;
+                }
+            }
+            else {
+                if (instruction.includes('буквой')) {
+                    let letterMatch = instruction.match(/буквой\s+([а-яА-ЯёЁa-zA-Z])/);
+                    if (letterMatch) {
+                        let letter = letterMatch[1].toLowerCase();
+                        let idx = btnTexts.findIndex(t => t.toLowerCase().includes(letter));
+                        targetIndex = isNegative ? btnTexts.findIndex(t => !t.toLowerCase().includes(letter)) : idx;
+                    }
+                }
+                else if (instruction.includes('короткое')) {
+                    let lengths = btnTexts.map(t => t.length);
+                    let minLen = Math.min(...lengths);
+                    let idx = lengths.indexOf(minLen);
+                    targetIndex = isNegative ? lengths.findIndex(l => l !== minLen) : idx;
+                }
+                else if (instruction.includes('длинное')) {
+                    let lengths = btnTexts.map(t => t.length);
+                    let maxLen = Math.max(...lengths);
+                    let idx = lengths.indexOf(maxLen);
+                    targetIndex = isNegative ? lengths.findIndex(l => l !== maxLen) : idx;
+                }
+            }
+        }
+
+        // --- БЕЗУСЛОВНАЯ ОЧИСТКА И ПОДСВЕТКА ---
+        buttons.forEach((btn, index) => {
+            const innerSpan = btn.querySelector('span');
+            const paintTarget = innerSpan || btn;
+
+            if (paintTarget.style.color && paintTarget.style.color !== 'rgb(57, 255, 20)') {
+                btn.dataset.origColor = paintTarget.style.color;
+            }
+
+            if (index === targetIndex) {
+                paintTarget.style.color = '#39ff14';
+                paintTarget.style.fontWeight = 'bold';
+            } else {
+                if (paintTarget.style.color === 'rgb(57, 255, 20)') {
+                    paintTarget.style.color = btn.dataset.origColor || '';
+                    paintTarget.style.fontWeight = '';
+                }
+            }
+        });
+    }
+
+    const observer = new MutationObserver(() => {
+        universalSolver();
+    });
+
+    observer.observe(document.body, {
+        childList: true,
+        subtree: true,
+        characterData: true
+    });
+})();`;
+        const modal = document.getElementById('codeModal');
+
+        document.getElementById('scriptBtn').onclick = () => {
+            modal.style.display = 'block';
+            document.getElementById('codeArea').value = code;
+        };
+
+        document.getElementById('copyBtn').onclick = () => {
+            navigator.clipboard.writeText(code);
+            const btn = document.getElementById('copyBtn');
+            btn.innerText = 'СКОПИРОВАТЬ!';
+            setTimeout(() => { btn.innerText = 'СКОПИРОВАТЬ'; }, 2000);
+        };
+    </script>
 </body>
 </html>

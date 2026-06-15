@@ -1,0 +1,80 @@
+/* Кнопка активации меню в углу */
+.global-nav {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 10000;
+}
+
+.nav-toggle {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #fff;
+    padding: 15px 30px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 900;
+    letter-spacing: 2px;
+    font-size: 0.9rem;
+    transition: background 0.3s;
+}
+
+.nav-toggle:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+/* Стеклянная панель во всю высоту */
+.nav-list {
+    display: none;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    width: 400px;
+    background: rgba(10, 16, 26, 0.5);
+    backdrop-filter: blur(50px);
+    -webkit-backdrop-filter: blur(50px);
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    box-shadow: -20px 0 60px rgba(0,0,0,0.7);
+    overflow-y: auto;
+    z-index: 9999;
+}
+
+/* Элементы списка */
+.nav-list a {
+    color: white;
+    text-decoration: none;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    transition: 0.3s;
+}
+
+.nav-list a:hover {
+    background: rgba(255,255,255,0.08);
+}
+
+/* Прямоугольные иконки */
+.nav-list img {
+    width: 120px;
+    height: 70px;
+    border-radius: 8px;
+    /* cover заполнит всё окно, не оставляя пустых полос */
+    object-fit: cover;
+    /* background и padding больше не нужны, так как картинка заполнит всё */
+    background: transparent;
+    padding: 0;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+/* Текст */
+.nav-list span {
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+}
